@@ -1,0 +1,58 @@
+import React from "react";
+import Image from "next/image";
+
+/**
+ * The `Hero` component is a React functional component that renders a hero section
+ * for showcasing ecosystem projects. It includes a title, a description, an image,
+ * and statistics about total votes and unique voters.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered hero section.
+ *
+ * @example
+ * ```tsx
+ * import { Hero } from './Hero';
+ *
+ * const App = () => (
+ *   <div>
+ *     <Hero />
+ *   </div>
+ * );
+ * ```
+ */
+export const Hero: React.FC = () => {
+  return (
+    <section className="text-center max-w-3xl mx-auto relative my-[10%]">
+      <div className="relative">
+        <h2 className="text-3xl sm:text-5xl line-height-normal font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent mb-5 leading-[1.15]">
+          Ecosystem Projects
+        </h2>
+        <p className="text-lg sm:text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto font-medium">
+          Discover and vote on the growing ecosystem of projects building on{" "}
+        </p>
+        <Image
+          alt="MegaETH"
+          src="/images/monad-logo.svg"
+          width={140}
+          height={28}
+          className="h-6 sm:h-7 w-auto flex mx-auto mt-6"
+          priority
+        />
+      </div>
+      <div className="flex items-center justify-center gap-8 mt-6">
+        <div className="text-center">
+          <div className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-indigo-400 bg-clip-text text-transparent">
+            55,446
+          </div>
+          <div className="text-md text-gray-400 mt-1">Total Votes</div>
+        </div>
+        <div className="text-center">
+          <div className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-indigo-400 bg-clip-text text-transparent">
+            5,201
+          </div>
+          <div className="text-md text-gray-400 mt-1">Unique Voters</div>
+        </div>
+      </div>
+    </section>
+  );
+};
