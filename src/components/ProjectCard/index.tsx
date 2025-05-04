@@ -16,6 +16,7 @@ import { VoteButton } from "@/components/VoteButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { IProject } from "@/app/api/projects/route";
+import { useUserContext } from "@/contexts/userContext";
 
 export interface IProjectCard {
   id: string;
@@ -51,15 +52,21 @@ export const ProjectCard: React.FC<IProjectCard> = ({
     null
   );
   const queryClient = useQueryClient();
+  const { user, connectDiscord } = useUserContext();
 
   const { mutate } = useMutation({
     mutationFn: async (voteType: "FOR" | "AGAINST") => {
+      if (!user) {
+        connectDiscord();
+        return;
+      }
+
       setPendingVote(voteType);
       const res = await fetch(`/api/votes/${id}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ voteType }),
+        body: JSON.stringify({ voteType, projectId: id }),
       });
 
       if (!res.ok) {

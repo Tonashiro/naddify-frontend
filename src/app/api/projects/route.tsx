@@ -1,6 +1,5 @@
 // app/api/auth/me/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
 export type TProjectStatus = "PENDING" | "TRUSTABLE" | "SCAM" | "RUG";
 
@@ -38,13 +37,6 @@ export interface IPaginatedProjects {
 
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const discordToken = cookieStore.get("discord")?.value;
-
-    if (!discordToken) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
     const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`);
     const queryParams = req.nextUrl.searchParams;
 
@@ -52,11 +44,7 @@ export async function GET(req: NextRequest) {
       url.searchParams.append(key, value);
     });
 
-    const res = await fetch(url.toString(), {
-      headers: {
-        Authorization: `Bearer ${discordToken}`,
-      },
-    });
+    const res = await fetch(url.toString());
 
     if (!res.ok) {
       const error = await res.json();

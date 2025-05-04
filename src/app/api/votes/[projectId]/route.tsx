@@ -1,4 +1,3 @@
-// app/api/auth/me/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
@@ -25,13 +24,10 @@ export interface IVoteResponse {
   stats: IVoteStats;
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { projectId: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
-    const { voteType }: { voteType: TVoteType } = await req.json();
-    const { projectId } = params;
+    const { voteType, projectId }: { voteType: TVoteType; projectId: string } =
+      await req.json();
 
     if (!voteType || !["FOR", "AGAINST"].includes(voteType)) {
       return NextResponse.json(
