@@ -88,7 +88,6 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project }) => {
 
       if (!res.ok) {
         const error = await res.json();
-        toast.error(error.message ?? "Voting failed");
         throw new Error(error.message ?? "Voting failed");
       }
 
@@ -98,35 +97,42 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project }) => {
       toast.success("Vote submitted successfully!");
       const { project_id } = data.vote;
       const { votesFor, votesAgainst } = data.stats;
+      const queries = queryClient
+        .getQueryCache()
+        .findAll({ queryKey: ["projects"] });
 
-      const updateProjects = (
-        oldData:
-          | {
-              pages: { projects: IProject[]; pagination: IPagination }[];
-              pageParams: Array<number>;
-            }
-          | undefined
-      ) => {
-        if (!oldData) return;
+      // Update each query's cache
+      queries.forEach(({ queryKey }) => {
+        queryClient.setQueryData(
+          queryKey,
+          (
+            oldData:
+              | {
+                  pages: { projects: IProject[]; pagination: IPagination }[];
+                  pageParams: Array<number>;
+                }
+              | undefined
+          ) => {
+            if (!oldData) return;
 
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            projects: page.projects.map((project) =>
-              project.id === project_id
-                ? {
-                    ...project,
-                    votes_for: votesFor,
-                    votes_against: votesAgainst,
-                  }
-                : project
-            ),
-          })),
-        };
-      };
-
-      queryClient.setQueryData(["projects"], updateProjects);
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                projects: page.projects.map((project) =>
+                  project.id === project_id
+                    ? {
+                        ...project,
+                        votes_for: votesFor,
+                        votes_against: votesAgainst,
+                      }
+                    : project
+                ),
+              })),
+            };
+          }
+        );
+      });
 
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },

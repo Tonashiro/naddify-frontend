@@ -42,27 +42,35 @@ export const DeleteProjectModal = ({
       return project.id;
     },
     onSuccess: (deletedId) => {
-      const updateProjects = (
-        oldData:
-          | {
-              pages: { projects: IProject[]; pagination: IPagination }[];
-              pageParams: Array<number>;
-            }
-          | undefined
-      ) => {
-        if (!oldData) return;
+      const queries = queryClient
+        .getQueryCache()
+        .findAll({ queryKey: ["projects"] });
 
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            projects: page.projects.filter((proj) => proj.id !== deletedId),
-          })),
-        };
-      };
+      queries.forEach(({ queryKey }) => {
+        queryClient.setQueryData(
+          queryKey,
+          (
+            oldData:
+              | {
+                  pages: { projects: IProject[]; pagination: IPagination }[];
+                  pageParams: Array<number>;
+                }
+              | undefined
+          ) => {
+            if (!oldData) return;
 
-      queryClient.setQueryData(["projects"], updateProjects);
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                projects: page.projects.filter((proj) => proj.id !== deletedId),
+              })),
+            };
+          }
+        );
+      });
 
+      // Optionally invalidate queries to refetch data
       queryClient.invalidateQueries({ queryKey: ["projects"] });
 
       toast.success("Project deleted successfully!");

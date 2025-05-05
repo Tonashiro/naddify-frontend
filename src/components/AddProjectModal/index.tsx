@@ -44,27 +44,34 @@ export const AddProjectModal: React.FC<IAddProjectModal> = ({
       return res.json();
     },
     onSuccess: (newProject) => {
-      const updateProjects = (
-        oldData:
-          | {
-              pages: { projects: IProject[]; pagination: IPagination }[];
-              pageParams: Array<number>;
-            }
-          | undefined
-      ) => {
-        if (!oldData) return;
+      const queries = queryClient
+        .getQueryCache()
+        .findAll({ queryKey: ["projects"] });
 
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page, index) => ({
-            ...page,
-            projects:
-              index === 0 ? [newProject, ...page.projects] : page.projects,
-          })),
-        };
-      };
+      queries.forEach(({ queryKey }) => {
+        queryClient.setQueryData(
+          queryKey,
+          (
+            oldData:
+              | {
+                  pages: { projects: IProject[]; pagination: IPagination }[];
+                  pageParams: Array<number>;
+                }
+              | undefined
+          ) => {
+            if (!oldData) return;
 
-      queryClient.setQueryData(["projects"], updateProjects);
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page, index) => ({
+                ...page,
+                projects:
+                  index === 0 ? [newProject, ...page.projects] : page.projects,
+              })),
+            };
+          }
+        );
+      });
 
       queryClient.invalidateQueries({ queryKey: ["projects"] });
 

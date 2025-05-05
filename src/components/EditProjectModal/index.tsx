@@ -45,36 +45,37 @@ export const EditProjectModal: React.FC<IEditProjectModal> = ({
       return res.json();
     },
     onSuccess: (updatedProject) => {
-      const updateProjects = (
-        oldData:
-          | {
-              pages: { projects: IProject[]; pagination: IPagination }[];
-              pageParams: Array<number>;
-            }
-          | undefined
-      ) => {
-        if (!oldData) return;
+      const queries = queryClient
+        .getQueryCache()
+        .findAll({ queryKey: ["projects"] });
 
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            projects: updateProjectList(page.projects, updatedProject),
-          })),
-        };
-      };
+      queries.forEach(({ queryKey }) => {
+        queryClient.setQueryData(
+          queryKey,
+          (
+            oldData:
+              | {
+                  pages: { projects: IProject[]; pagination: IPagination }[];
+                  pageParams: Array<number>;
+                }
+              | undefined
+          ) => {
+            if (!oldData) return;
 
-      const updateProjectList = (
-        projects: IProject[],
-        updatedProject: IProject
-      ) => {
-        return projects.map((proj) =>
-          proj.id === updatedProject.id ? updatedProject : proj
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                projects: page.projects.map((proj) =>
+                  proj.id === updatedProject.id ? updatedProject : proj
+                ),
+              })),
+            };
+          }
         );
-      };
+      });
 
-      queryClient.setQueryData(["projects"], updateProjects);
-
+      // Optionally invalidate queries to refetch data
       queryClient.invalidateQueries({ queryKey: ["projects"] });
 
       toast.success("Project updated successfully!");
