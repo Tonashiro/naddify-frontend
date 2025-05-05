@@ -1,0 +1,1 @@
+export const PROJECTS_AMOUNT_LIMIT = 20;

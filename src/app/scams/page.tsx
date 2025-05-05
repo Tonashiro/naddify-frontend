@@ -2,13 +2,12 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { IProject } from "@/app/api/projects/route";
-import { Hero } from "@/components/Hero";
 import { Projects } from "@/components/Projects";
-import { useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Spinner } from "@/components/Spinner";
 import { PROJECTS_AMOUNT_LIMIT } from "@/constants";
 
-export default function Home() {
+export default function Scams() {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
@@ -21,28 +20,26 @@ export default function Home() {
         pages: number;
       };
     }>({
-      queryKey: ["projects"],
+      queryKey: ["scamProjects"],
       initialPageParam: 1,
       queryFn: async ({ pageParam = 1 }) => {
         const res = await fetch(
-          `/api/projects?page=${pageParam}&limit=${PROJECTS_AMOUNT_LIMIT}`,
+          `/api/projects?status=SCAM&page=${pageParam}&limit=${PROJECTS_AMOUNT_LIMIT}`,
           {
             credentials: "include",
           }
         );
-
         if (!res.ok) {
-          throw new Error("Failed to fetch projects");
+          throw new Error("Failed to fetch scam projects");
         }
-
         return res.json();
       },
       getNextPageParam: (lastPage) => {
-        const next =
+        const nextPage =
           lastPage.pagination.page < lastPage.pagination.pages
             ? lastPage.pagination.page + 1
             : undefined;
-        return next;
+        return nextPage;
       },
       refetchOnWindowFocus: "always",
       staleTime: 60 * 1000,
@@ -85,9 +82,9 @@ export default function Home() {
   const allProjects = data?.pages.flatMap((page) => page.projects) ?? [];
 
   return (
-    <div className="min-h-screen flex flex-col mx-auto w-full px-[5%] max-w-[1920px] text-text-primary">
-      <Hero />
+    <div className="min-h-screen flex flex-col mx-auto w-full px-[5%] pt-[10%] max-w-[1920px] text-text-primary">
       <Projects projects={allProjects} />
+
       <div ref={loadMoreRef} className="h-12 flex justify-center items-center">
         {isFetchingNextPage && <Spinner />}
       </div>

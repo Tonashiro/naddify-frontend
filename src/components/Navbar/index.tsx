@@ -3,10 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useUserContext } from "@/contexts/userContext";
-import { Skeleton } from "@/components/ui/skeleton";
+import { UserMenu } from "@/components/UserMenu";
 
 /**
  * A reusable navigation item component with hover effects.
@@ -42,54 +40,29 @@ export const NavItem: React.FC<{ href: string; label: string }> = ({
 /**
  * The `Navbar` component renders a fixed navigation bar at the top of the page.
  *
- * It includes:
- * - A logo on the left.
- * - Navigation links in the center.
- * - A "Connect Discord" button on the right.
+ * ### Features:
+ * - **Logo**: Displays the project logo on the left, which navigates to the home page when clicked.
+ * - **Navigation Links**: Includes links to different sections of the website (e.g., Home, Scams) in the center.
+ * - **User Menu**: Displays a user menu or "Connect Discord" button on the right.
  *
- * The navigation bar is responsive and uses Tailwind CSS for styling.
+ * ### Styling:
+ * - The navigation bar is styled using Tailwind CSS.
+ * - It has a semi-transparent background with a blur effect (`backdrop-blur-md`) and a bottom border.
+ * - The navigation bar is responsive, with navigation links hidden on smaller screens (`md:flex`).
  *
  * @example
  * ```tsx
  * <Navbar />
  * ```
+ *
+ * @returns A JSX element representing the navigation bar.
  */
 export const Navbar: React.FC = () => {
   const router = useRouter();
-  const { user, connectDiscord, isLoading } = useUserContext();
-
-  let avatarSection;
-
-  if (isLoading) {
-    avatarSection = <Skeleton className="w-10 h-10 rounded-full" />;
-  } else if (!user) {
-    avatarSection = (
-      <Button
-        onClick={() => connectDiscord()}
-        className="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition-all cursor-pointer"
-      >
-        Connect Discord
-      </Button>
-    );
-  } else {
-    avatarSection = (
-      <div className="flex items-center cursor-pointer">
-        <Image
-          src={`https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`}
-          alt="User Avatar"
-          width={40}
-          height={40}
-          className="rounded-full cursor-pointer"
-          onClick={() => router.push("/profile")}
-        />
-      </div>
-    );
-  }
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-gray-900/80 backdrop-blur-md border-b border-gray-800 z-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        {/* Logo */}
         <div className="flex items-center">
           <Image
             src="/images/monad-logo.svg"
@@ -101,14 +74,12 @@ export const Navbar: React.FC = () => {
           />
         </div>
 
-        {/* Navigation Items */}
         <ul className="hidden md:flex items-center space-x-6">
           <NavItem href="/" label="Home" />
           <NavItem href="/scams" label="Scams" />
-          <NavItem href="/about" label="About" />
         </ul>
 
-        {avatarSection}
+        <UserMenu />
       </div>
     </nav>
   );

@@ -1,5 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Image from "next/image";
+import { AddProjectModal } from "@/components/AddProjectModal";
+import { AddProjectCard } from "@/components/AddProjectCard";
+import { useUserContext } from "@/contexts/userContext";
 
 /**
  * The `Hero` component is a React functional component that renders a hero section
@@ -21,6 +26,9 @@ import Image from "next/image";
  * ```
  */
 export const Hero: React.FC = () => {
+  const { user } = useUserContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <section className="text-center max-w-3xl mx-auto relative my-[10%]">
       <div className="relative">
@@ -39,7 +47,7 @@ export const Hero: React.FC = () => {
           priority
         />
       </div>
-      <div className="flex items-center justify-center gap-8 mt-6">
+      <div className="flex items-center justify-center gap-8 mt-6 mb-6">
         <div className="text-center">
           <div className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-indigo-400 bg-clip-text text-transparent">
             55,446
@@ -53,6 +61,16 @@ export const Hero: React.FC = () => {
           <div className="text-md text-gray-400 mt-1">Unique Voters</div>
         </div>
       </div>
+
+      {user?.is_admin && (
+        <>
+          <AddProjectCard setIsModalOpen={setIsModalOpen} />
+          <AddProjectModal
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+          />
+        </>
+      )}
     </section>
   );
 };

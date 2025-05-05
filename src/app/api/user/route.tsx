@@ -21,6 +21,7 @@ export async function GET() {
 
     if (!res.ok) {
       const error = await res.json();
+      
       return NextResponse.json(error, { status: res.status });
     }
 

@@ -44,7 +44,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   } = useQuery<IUser | null>({
     queryKey: ["user"],
     queryFn: async () => {
-      const res = await fetch("/api/discord", {
+      const res = await fetch("/api/user", {
         credentials: "include",
       });
 
