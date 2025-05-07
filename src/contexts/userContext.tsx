@@ -1,12 +1,13 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   createContext,
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
 } from "react";
 
@@ -31,6 +32,20 @@ const UserContext = createContext<IUserContext | undefined>(undefined);
 
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+
+  // Store token from URL in cookies if present
+  useEffect(() => {
+    const token = searchParams.get("token");
+
+    if (token) {
+      document.cookie = `discord=${token}; path=/; max-age=${
+        7 * 24 * 60 * 60
+      }; SameSite=Lax; Secure`;
+      router.replace("/");
+    }
+  }, [searchParams, router]);
 
   // Function to redirect to Discord authorization
   const connectDiscord = useCallback(() => {
