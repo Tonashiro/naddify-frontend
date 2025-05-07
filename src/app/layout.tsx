@@ -5,6 +5,8 @@ import Container from "@/components/Container";
 import { Navbar } from "@/components/Navbar";
 import { Providers } from "@/app/providers";
 import { Bounce, ToastContainer } from "react-toastify";
+import { Suspense } from "react";
+import { Spinner } from "@/components/Spinner";
 
 // Import Geist fonts as CSS variables
 const geistSans = Geist({
@@ -31,17 +33,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Providers>
-        <body
-          className={`
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center h-screen w-screen">
+            <Spinner />
+          </div>
+        }
+      >
+        <Providers>
+          <body
+            className={`
           ${geistSans.variable} ${geistMono.variable}
           font-sans antialiased
         `}
-        >
-          <div className="fixed z-[-1] inset-0 min-h-screen w-screen bg-gradient pointer-events-none" />
-          <Navbar />
-          <Container>{children}</Container>
-          <ToastContainer
+          >
+            <div className="fixed z-[-1] inset-0 min-h-screen w-screen bg-gradient pointer-events-none" />
+            <Navbar />
+            <Container>{children}</Container>
+            <ToastContainer
               position="top-right"
               autoClose={5000}
               hideProgressBar={false}
@@ -54,8 +63,9 @@ export default function RootLayout({
               theme="dark"
               transition={Bounce}
             />
-        </body>
-      </Providers>
+          </body>
+        </Providers>
+      </Suspense>
     </html>
   );
 }
