@@ -24,9 +24,7 @@ import { Trash2, Settings } from "lucide-react"; // Import the Cog icon from Luc
 import { DeleteProjectModal } from "@/components/DeleteProjectModal";
 
 export interface IProjectCard {
-  project: IProject & {
-    logoUrl: string;
-  };
+  project: IProject;
 }
 
 /**
@@ -168,11 +166,11 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project }) => {
         <div className="z-[-1] absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(134,0,255,0.07),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <CardHeader className="flex items-center gap-4">
           <Image
-            src={project.logoUrl}
+            src={project.logo_url ?? '/images/monad.webp'}
             alt={`${project.name} logo`}
             height={56}
             width={56}
-            className="rounded-full"
+            className="rounded-full object-contain max-w-[56px] max-h-[56px]"
           />
           <div className="flex flex-col gap-1">
             <CardTitle className="text-lg font-bold">{project.name}</CardTitle>

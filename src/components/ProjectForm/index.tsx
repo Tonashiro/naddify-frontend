@@ -23,8 +23,12 @@ import { IProject } from "@/app/api/projects/route";
 import { useQuery } from "@tanstack/react-query";
 import { ICategory } from "@/app/api/categories/route";
 import { projectSchema } from "@/components/ProjectForm/schema";
+import { useState } from "react";
 
-export type TProjectForm = z.infer<typeof projectSchema>;
+export type TProjectForm = z.infer<typeof projectSchema> & {
+  logo_url: File | null;
+  banner_url: File | null;
+};
 
 interface IProjectForm {
   project?: IProject;
@@ -37,6 +41,9 @@ export const ProjectForm: React.FC<IProjectForm> = ({
   onSubmit,
   formId,
 }) => {
+  const [logo_url, setLogo] = useState<File | null>(null);
+  const [banner_url, setBanner] = useState<File | null>(null);
+
   const { data: categoryOptions = [], isLoading } = useQuery<ICategory[]>({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -49,7 +56,7 @@ export const ProjectForm: React.FC<IProjectForm> = ({
     },
   });
 
-  const form = useForm<TProjectForm>({
+  const form = useForm<Omit<TProjectForm, "logo_url" | "banner_url">>({
     resolver: zodResolver(projectSchema),
     defaultValues: project
       ? {
@@ -78,7 +85,9 @@ export const ProjectForm: React.FC<IProjectForm> = ({
     <Form {...form}>
       <form
         id={formId}
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit((data) =>
+          onSubmit({ ...data, logo_url, banner_url })
+        )}
         className="space-y-4"
       >
         {isLoading && (
@@ -108,6 +117,40 @@ export const ProjectForm: React.FC<IProjectForm> = ({
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          name="projectLogo"
+          render={() => (
+            <FormItem>
+              <FormLabel>Project Logo (required)</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setLogo(e.target.files?.[0] ?? null)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          name="projectBanner"
+          render={() => (
+            <FormItem>
+              <FormLabel>Project Banner (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setBanner(e.target.files?.[0] ?? null)}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

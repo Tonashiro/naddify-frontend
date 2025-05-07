@@ -14,6 +14,7 @@ export default function Home() {
     []
   );
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const queryKey = ["projects", selectedStatuses, selectedCategories];
@@ -88,10 +89,27 @@ export default function Home() {
     },
   });
 
+  useEffect(() => {
+    if (!isLoading && !isLoadingCategories && data && categories) {
+      setIsInitialLoadComplete(true);
+    }
+  }, [isLoading, isLoadingCategories, categories, data]);
+
   const allProjects =
     data?.pages
       .flatMap((page) => page.projects)
       .filter((project) => project.status !== "SCAM") ?? [];
+
+  const isInitialLoading =
+    !isInitialLoadComplete && (isLoading || isLoadingCategories);
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col mx-auto w-full px-[5%] max-w-[1920px] text-text-primary">

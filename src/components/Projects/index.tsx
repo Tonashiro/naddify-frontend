@@ -48,13 +48,7 @@ export const Projects = ({ projects }: Props) => {
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 mb-[5%]">
       {projects.map((project) => (
-        <ProjectCard
-          key={project.id}
-          project={{
-            ...project,
-            logoUrl: "/images/monad.webp",
-          }}
-        />
+        <ProjectCard key={project.id} project={project} />
       ))}
     </section>
   );

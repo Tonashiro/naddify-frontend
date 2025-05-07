@@ -11,6 +11,8 @@ export interface IProject {
   twitter?: string | null;
   discord?: string | null;
   github?: string | null;
+  logo_url: string;
+  banner_url?: string | null;
   status: TProjectStatus;
   votes_for: number;
   votes_against: number;

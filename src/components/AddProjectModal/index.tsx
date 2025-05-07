@@ -26,14 +26,41 @@ export const AddProjectModal: React.FC<IAddProjectModal> = ({
 }) => {
   const queryClient = useQueryClient();
 
+  const { mutateAsync: uploadImages } = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message ?? "Upload failed");
+      }
+
+      return res.json() as Promise<{ logoUrl: string; bannerUrl?: string }>;
+    },
+  });
+
   const { mutate: addProject, isPending } = useMutation({
-    mutationFn: async (values: TProjectForm) => {
+    mutationFn: async (
+      values: TProjectForm & { logoUrl: string; bannerUrl?: string }
+    ) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { logoUrl, bannerUrl, ...restValues } = values;
+
+      const payload = {
+        ...restValues,
+        logo_url: values.logoUrl,
+        banner_url: values.bannerUrl,
+      };
+
       const res = await fetch("/api/projects", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -83,8 +110,22 @@ export const AddProjectModal: React.FC<IAddProjectModal> = ({
     },
   });
 
-  const handleSubmit = (values: TProjectForm) => {
-    addProject(values);
+  const handleSubmit = async (values: TProjectForm) => {
+    try {
+      const formData = new FormData();
+      if (values.logo_url) {
+        formData.append("projectLogo", values.logo_url);
+      }
+      if (values.banner_url) {
+        formData.append("projectBanner", values.banner_url);
+      }
+      const { logoUrl, bannerUrl } = await uploadImages(formData);
+
+      addProject({ ...values, logoUrl, bannerUrl });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      toast.error(errorMessage);
+    }
   };
 
   return (
