@@ -7,6 +7,7 @@ import { Providers } from "@/app/providers";
 import { Bounce, ToastContainer } from "react-toastify";
 import { Suspense } from "react";
 import { Spinner } from "@/components/Spinner";
+import { Analytics } from "@vercel/analytics/react";
 
 // Import Geist fonts as CSS variables
 const geistSans = Geist({
@@ -33,6 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Analytics />
       <Suspense
         fallback={
           <div className="flex justify-center items-center h-screen w-screen">
