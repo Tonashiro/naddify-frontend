@@ -20,11 +20,13 @@ import { toast } from "react-toastify";
 import { IPagination, IProject } from "@/app/api/projects/route";
 import { useUserContext } from "@/contexts/userContext";
 import { EditProjectModal } from "@/components/EditProjectModal";
-import { Trash2, Settings } from "lucide-react"; // Import the Cog icon from Lucide
+import { Pencil } from "lucide-react";
 import { DeleteProjectModal } from "@/components/DeleteProjectModal";
+import { useRouter } from "next/navigation";
 
 export interface IProjectCard {
   project: IProject;
+  isPreview?: boolean;
 }
 
 /**
@@ -33,7 +35,7 @@ export interface IProjectCard {
  * ### Features:
  * - **Project Details**:
  *   - Displays the project name, description, logo, and category.
- *   - Includes links to the project's website, Twitter, Discord, and GitHub (if available).
+ *   - Includes links to the project's website, Twitter, Discord.
  * - **Voting System**:
  *   - Allows users to vote "FOR" or "AGAINST" a project.
  *   - Updates the vote count dynamically using React Query.
@@ -60,7 +62,7 @@ export interface IProjectCard {
  * @param props - The props for the `ProjectCard` component.
  * @returns A JSX element representing the project card.
  */
-export const ProjectCard: React.FC<IProjectCard> = ({ project }) => {
+export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
   const [pendingVote, setPendingVote] = useState<"FOR" | "AGAINST" | null>(
     null
   );
@@ -68,6 +70,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const { user, connectDiscord } = useUserContext();
+  const router = useRouter();
 
   const { mutate } = useMutation({
     mutationFn: async (voteType: "FOR" | "AGAINST") => {
@@ -145,34 +148,48 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project }) => {
 
   return (
     <>
-      <Card id={project.id} key={project.id} className="relative">
-        {user?.is_admin && (
+      <Card
+        id={project.id}
+        key={project.id}
+        className="relative min-h-[280px] cursor-pointer"
+        onClick={() => !isPreview && router.push(`/projects/${project.id}`)}
+      >
+        <div className="absolute top-0 left-0 inset-0 w-full h-[120px] rounded-t-xl brightness-75 z-[-1] bg-purple-600/50">
+          {project.banner_url && (
+            <Image
+              src={project.banner_url}
+              height={120}
+              width={280}
+              alt={`${project.name} banner`}
+              className="w-full h-[120px] max-h-[120px] z-[-1] rounded-t-xl bg-purple-500"
+            />
+          )}
+        </div>
+
+        {!isPreview && (
           <div className="absolute top-4 right-4">
             <button
-              onClick={() => setIsDeleteModalOpen(true)}
-              className="p-2 rounded-full hover:bg-red-700 transition-colors duration-200 text-white cursor-pointer"
-            >
-              <Trash2 size={20} />
-            </button>
-            <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/projects/${project.id}/edit`);
+              }}
               className="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200 text-white cursor-pointer"
             >
-              <Settings size={20} />
+              <Pencil size={20} />
             </button>
           </div>
         )}
 
         <div className="z-[-1] absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(134,0,255,0.07),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <CardHeader className="flex items-center gap-4">
+        <CardHeader className="pt-[64px] flex flex-col">
           <Image
-            src={project.logo_url ?? '/images/monad.webp'}
+            src={project.logo_url ?? "/images/monad.webp"}
             alt={`${project.name} logo`}
             height={56}
             width={56}
-            className="rounded-full object-contain max-w-[56px] max-h-[56px]"
+            className="rounded-full max-w-[56px] max-h-[56px]"
           />
-          <div className="flex flex-col gap-1">
+          <div className="flex gap-4 items-center w-full">
             <CardTitle className="text-lg font-bold">{project.name}</CardTitle>
             {project.categories?.[0] && (
               <span className="w-fit px-2 py-1 font-medium text-xs bg-purple-500/5 text-purple-400 rounded-full border border-purple-500/20">
@@ -205,7 +222,10 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project }) => {
           <div className="flex items-center gap-1 sm:gap-2 text-sm">
             <VoteButton
               variant="for"
-              onClick={() => mutate("FOR")}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isPreview) mutate("FOR");
+              }}
               isPending={pendingVote === "FOR"}
               disabled={pendingVote === "AGAINST"}
             >
@@ -213,7 +233,10 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project }) => {
             </VoteButton>
             <VoteButton
               variant="against"
-              onClick={() => mutate("AGAINST")}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isPreview) mutate("AGAINST");
+              }}
               isPending={pendingVote === "AGAINST"}
               disabled={pendingVote === "FOR"}
             >

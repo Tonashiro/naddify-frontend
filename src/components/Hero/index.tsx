@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
-import { AddProjectModal } from "@/components/AddProjectModal";
 import { AddProjectCard } from "@/components/AddProjectCard";
 import { useUserContext } from "@/contexts/userContext";
 
@@ -27,7 +26,6 @@ import { useUserContext } from "@/contexts/userContext";
  */
 export const Hero: React.FC = () => {
   const { user } = useUserContext();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <section className="text-center max-w-3xl mx-auto relative my-[10%]">
@@ -62,15 +60,7 @@ export const Hero: React.FC = () => {
         </div>
       </div>
 
-      {user?.is_admin && (
-        <>
-          <AddProjectCard setIsModalOpen={setIsModalOpen} />
-          <AddProjectModal
-            isModalOpen={isModalOpen}
-            setIsModalOpen={setIsModalOpen}
-          />
-        </>
-      )}
+      {user?.is_admin && <AddProjectCard />}
     </section>
   );
 };

@@ -16,6 +16,7 @@ const ProjectCTA: React.FC<IProjectCTA> = ({ href, children }: IProjectCTA) => {
   return (
     <a
       href={href}
+      onClick={(e) => e.stopPropagation()}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center justify-center bg-white/[0.05] size-9 rounded-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]"

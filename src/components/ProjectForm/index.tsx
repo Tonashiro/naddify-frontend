@@ -1,8 +1,7 @@
 "use client";
 
 import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { UseFormReturn } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -20,10 +19,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { IProject } from "@/app/api/projects/route";
-import { useQuery } from "@tanstack/react-query";
 import { ICategory } from "@/app/api/categories/route";
 import { projectSchema } from "@/components/ProjectForm/schema";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { FileRejection, useDropzone } from "react-dropzone";
+
+const isFieldRequired = (fieldName: string): boolean => {
+  const field =
+    projectSchema.shape[fieldName as keyof typeof projectSchema.shape];
+  return (
+    field instanceof z.ZodString &&
+    field._def.checks.some((check) => check.kind === "min")
+  );
+};
 
 export type TProjectForm = z.infer<typeof projectSchema> & {
   logo_url: File | null;
@@ -31,76 +39,110 @@ export type TProjectForm = z.infer<typeof projectSchema> & {
 };
 
 interface IProjectForm {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<TProjectForm, any, TProjectForm>;
+  categoryOptions: ICategory[];
   project?: IProject;
   onSubmit: (values: TProjectForm) => void;
   formId: string;
 }
 
 export const ProjectForm: React.FC<IProjectForm> = ({
-  project,
+  form,
   onSubmit,
+  categoryOptions,
   formId,
 }) => {
-  const [logo_url, setLogo] = useState<File | null>(null);
-  const [banner_url, setBanner] = useState<File | null>(null);
+  const { setValue, control } = form;
 
-  const { data: categoryOptions = [], isLoading } = useQuery<ICategory[]>({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const res = await fetch("/api/categories");
-      if (!res.ok) {
-        throw new Error("Failed to fetch categories");
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const [bannerError, setBannerError] = useState<string | null>(null);
+
+  const onDropLogo = useCallback(
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (file) {
+        setValue("logo_url", file, { shouldValidate: true });
+        setLogoError(null);
       }
-      const data = await res.json();
-      return data;
     },
+    [setValue]
+  );
+
+  const onDropBanner = useCallback(
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (file) {
+        setValue("banner_url", file, { shouldValidate: true });
+        setBannerError(null);
+      }
+    },
+    [setValue]
+  );
+
+  const onDropLogoRejected = useCallback((fileRejections: FileRejection[]) => {
+    const errorMessages = fileRejections.map((rejection) => {
+      if (rejection.errors.some((e) => e.code === "file-too-large")) {
+        return "Logo must be less than 1MB";
+      }
+      if (rejection.errors.some((e) => e.code === "file-invalid-type")) {
+        return "Invalid file type. Only JPEG, PNG, and WEBP are allowed.";
+      }
+      return "Invalid file.";
+    });
+    setLogoError(errorMessages.join(", "));
+  }, []);
+
+  const onDropBannerRejected = useCallback(
+    (fileRejections: FileRejection[]) => {
+      const errorMessages = fileRejections.map((rejection) => {
+        if (rejection.errors.some((e) => e.code === "file-too-large")) {
+          return "Banner must be less than 2MB";
+        }
+        if (rejection.errors.some((e) => e.code === "file-invalid-type")) {
+          return "Invalid file type. Only JPEG, PNG, and WEBP are allowed.";
+        }
+        return "Invalid file.";
+      });
+      setBannerError(errorMessages.join(", "));
+    },
+    []
+  );
+
+  const logoDropzone = useDropzone({
+    onDrop: onDropLogo,
+    onDropRejected: onDropLogoRejected,
+    accept: { "image/jpeg": [], "image/png": [], "image/webp": [] },
+    maxSize: 1 * 1024 * 1024, // 1MB
+    multiple: false,
   });
 
-  const form = useForm<Omit<TProjectForm, "logo_url" | "banner_url">>({
-    resolver: zodResolver(projectSchema),
-    defaultValues: project
-      ? {
-          name: project.name,
-          description: project.description,
-          website: project.website ?? "",
-          twitter: project.twitter ?? "",
-          discord: project.discord ?? "",
-          github: project.github ?? "",
-          status: project.status,
-          category: project.categories[0]?.id ?? "",
-        }
-      : {
-          name: "",
-          description: "",
-          website: "",
-          twitter: "",
-          discord: "",
-          github: "",
-          status: "PENDING",
-          category: "",
-        },
+  const bannerDropzone = useDropzone({
+    onDrop: onDropBanner,
+    onDropRejected: onDropBannerRejected,
+    accept: { "image/jpeg": [], "image/png": [], "image/webp": [] },
+    maxSize: 2 * 1024 * 1024, // 2MB
+    multiple: false,
   });
 
   return (
     <Form {...form}>
       <form
         id={formId}
-        onSubmit={form.handleSubmit((data) =>
-          onSubmit({ ...data, logo_url, banner_url })
-        )}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-4"
       >
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-xs bg-black/30 z-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-purple-500 border-solid"></div>
-          </div>
-        )}
         <FormField
           name="name"
-          control={form.control}
+          control={control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>
+                Name{" "}
+                {isFieldRequired("name") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -111,28 +153,21 @@ export const ProjectForm: React.FC<IProjectForm> = ({
 
         <FormField
           name="description"
-          control={form.control}
+          control={control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>
+                Description{" "}
+                {isFieldRequired("description") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </FormLabel>
               <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          name="projectLogo"
-          render={() => (
-            <FormItem>
-              <FormLabel>Project Logo (required)</FormLabel>
-              <FormControl>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setLogo(e.target.files?.[0] ?? null)}
+                <textarea
+                  {...field}
+                  className="border border-gray-300 rounded-md p-2 w-full"
+                  rows={4}
+                  maxLength={140}
                 />
               </FormControl>
               <FormMessage />
@@ -140,29 +175,65 @@ export const ProjectForm: React.FC<IProjectForm> = ({
           )}
         />
 
-        <FormField
-          name="projectBanner"
-          render={() => (
-            <FormItem>
-              <FormLabel>Project Banner (optional)</FormLabel>
-              <FormControl>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setBanner(e.target.files?.[0] ?? null)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+        <FormItem>
+          <FormLabel>
+            Project Logo <span className="text-red-500">*</span>
+          </FormLabel>
+          <div
+            {...logoDropzone.getRootProps()}
+            className={`border-dashed border-2 p-4 rounded-md cursor-pointer ${
+              form.formState.errors.logo_url || logoError
+                ? "border-red-500"
+                : "border-gray-300"
+            }`}
+          >
+            <input {...logoDropzone.getInputProps()} />
+            <p>Drag & drop a logo here, or click to select a file</p>
+            <p className="text-sm text-gray-500">
+              Only JPEG, JPG, PNG, WEBP (max 1MB)
+            </p>
+          </div>
+          {form.formState.errors.logo_url && (
+            <FormMessage>{form.formState.errors.logo_url.message}</FormMessage>
           )}
-        />
+          {logoError && <FormMessage>{logoError}</FormMessage>}
+        </FormItem>
+
+        <FormItem>
+          <FormLabel>Project Banner</FormLabel>
+          <div
+            {...bannerDropzone.getRootProps()}
+            className={`border-dashed border-2 p-4 rounded-md cursor-pointer ${
+              form.formState.errors.banner_url || bannerError
+                ? "border-red-500"
+                : "border-gray-300"
+            }`}
+          >
+            <input {...bannerDropzone.getInputProps()} />
+            <p>Drag & drop a banner here, or click to select a file</p>
+            <p className="text-sm text-gray-500">
+              Only JPEG, JPG, PNG, WEBP (max 2MB)
+            </p>
+          </div>
+          {form.formState.errors.banner_url && (
+            <FormMessage>
+              {form.formState.errors.banner_url.message}
+            </FormMessage>
+          )}
+          {bannerError && <FormMessage>{bannerError}</FormMessage>}
+        </FormItem>
 
         <FormField
           name="website"
-          control={form.control}
+          control={control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Website</FormLabel>
+              <FormLabel>
+                Website{" "}
+                {isFieldRequired("website") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </FormLabel>
               <FormControl>
                 <Input {...field} placeholder="https://website.com" />
               </FormControl>
@@ -173,10 +244,12 @@ export const ProjectForm: React.FC<IProjectForm> = ({
 
         <FormField
           name="twitter"
-          control={form.control}
+          control={control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Twitter</FormLabel>
+              <FormLabel>
+                Twitter <span className="text-red-500">*</span>
+              </FormLabel>
               <FormControl>
                 <Input {...field} placeholder="https://x.com/" />
               </FormControl>
@@ -187,10 +260,15 @@ export const ProjectForm: React.FC<IProjectForm> = ({
 
         <FormField
           name="discord"
-          control={form.control}
+          control={control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Discord</FormLabel>
+              <FormLabel>
+                Discord{" "}
+                {isFieldRequired("discord") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </FormLabel>
               <FormControl>
                 <Input {...field} placeholder="https://discord.gg/" />
               </FormControl>
@@ -200,49 +278,16 @@ export const ProjectForm: React.FC<IProjectForm> = ({
         />
 
         <FormField
-          name="github"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>GitHub</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="https://github.com/" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          name="status"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a status" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="PENDING">PENDING</SelectItem>
-                  <SelectItem value="TRUSTABLE">TRUSTABLE</SelectItem>
-                  <SelectItem value="SCAM">SCAM</SelectItem>
-                  <SelectItem value="RUG">RUG</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
           name="category"
-          control={form.control}
+          control={control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>
+                Category{" "}
+                {isFieldRequired("category") && (
+                  <span className="text-red-500">*</span>
+                )}
+              </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>

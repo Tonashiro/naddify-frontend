@@ -16,7 +16,7 @@ export interface IProject {
   status: TProjectStatus;
   votes_for: number;
   votes_against: number;
-  created_by: {
+  created_by?: {
     username: string;
     avatar: string;
   } | null;
@@ -24,7 +24,7 @@ export interface IProject {
     id: string;
     name: string;
   }[];
-  created_at: string;
+  created_at?: string;
 }
 
 export interface IPagination {
