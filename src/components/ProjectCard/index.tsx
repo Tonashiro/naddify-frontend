@@ -19,7 +19,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { IPagination, IProject } from "@/app/api/projects/route";
 import { useUserContext } from "@/contexts/userContext";
-import { EditProjectModal } from "@/components/EditProjectModal";
 import { Pencil } from "lucide-react";
 import { DeleteProjectModal } from "@/components/DeleteProjectModal";
 import { useRouter } from "next/navigation";
@@ -39,9 +38,6 @@ export interface IProjectCard {
  * - **Voting System**:
  *   - Allows users to vote "FOR" or "AGAINST" a project.
  *   - Updates the vote count dynamically using React Query.
- * - **Admin Actions**:
- *   - If the user is an admin, displays buttons to edit or delete the project.
- *   - Opens the `EditProjectModal` or `DeleteProjectModal` when the respective button is clicked.
  * - **Responsive Design**:
  *   - Styled using Tailwind CSS for responsiveness and modern UI effects.
  *   - Includes hover effects and transitions for better user experience.
@@ -52,7 +48,6 @@ export interface IProjectCard {
  * ### Dependencies:
  * - Uses `react-query` for data mutations and cache updates.
  * - Uses `react-toastify` for displaying success and error messages.
- * - Integrates with `EditProjectModal` and `DeleteProjectModal` for admin actions.
  *
  * ### Example:
  * ```tsx
@@ -66,7 +61,6 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
   const [pendingVote, setPendingVote] = useState<"FOR" | "AGAINST" | null>(
     null
   );
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const { user, connectDiscord } = useUserContext();
@@ -245,12 +239,6 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
           </div>
         </CardFooter>
       </Card>
-
-      <EditProjectModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        project={project}
-      />
 
       <DeleteProjectModal
         isDialogOpen={isDeleteModalOpen}
