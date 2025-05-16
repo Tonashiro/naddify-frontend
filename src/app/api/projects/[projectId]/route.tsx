@@ -5,9 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function PUT(req: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const discordToken = cookieStore.get("discord")?.value;
+    const token = cookieStore.get("token")?.value;
 
-    if (!discordToken) {
+    if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
     const {
@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${discordToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(mappedBody),
       }
@@ -54,9 +54,9 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const discordToken = cookieStore.get("discord")?.value;
+    const token = cookieStore.get("token")?.value;
 
-    if (!discordToken) {
+    if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -74,7 +74,7 @@ export async function DELETE(req: NextRequest) {
       {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${discordToken}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );

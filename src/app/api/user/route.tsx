@@ -5,16 +5,16 @@ import { IUser } from "@/contexts/userContext";
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const discordToken = cookieStore.get("discord")?.value;
+    const token = cookieStore.get("token")?.value;
 
-    if (!discordToken) {
+    if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`,
       {
-        headers: { Authorization: `Bearer ${discordToken}` },
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 

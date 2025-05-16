@@ -16,6 +16,7 @@ export interface IProject {
   status: TProjectStatus;
   votes_for: number;
   votes_against: number;
+  nads_verified: boolean;
   created_by?: {
     username: string;
     avatar: string;
@@ -70,9 +71,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const discordToken = cookieStore.get("discord")?.value;
+    const token = cookieStore.get("token")?.value;
 
-    if (!discordToken) {
+    if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${discordToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(mappedBody),
       }

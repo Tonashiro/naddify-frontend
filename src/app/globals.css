@@ -3,6 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
 @theme inline {
   --color-background: #050508;
   --color-background-secondary: #f2dae1;
@@ -55,6 +56,13 @@ body {
   min-height: 100vh;
   scroll-behavior: smooth;
 }
+
+
+html body[data-scroll-locked] {
+  overflow: visible !important;
+  margin-right: 0 !important;
+} 
+
 
 .bg-gradient {
   background-image: radial-gradient(

@@ -4,9 +4,9 @@ import { cookies } from "next/headers";
 export async function POST(req: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const discordToken = cookieStore.get("discord")?.value;
+    const token = cookieStore.get("token")?.value;
 
-    if (!discordToken) {
+    if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${discordToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: combinedFormData,
       }

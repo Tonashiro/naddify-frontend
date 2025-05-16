@@ -204,6 +204,7 @@ export default function AddProject() {
                 : null,
               votes_for: 0,
               votes_against: 0,
+              nads_verified: false,
             }}
             isPreview
           />

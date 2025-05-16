@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
     }
 
     const cookieStore = await cookies();
-    const discordToken = cookieStore.get("discord")?.value;
+    const token = cookieStore.get("token")?.value;
 
-    if (!discordToken) {
+    if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${discordToken}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ voteType }),

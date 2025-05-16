@@ -1,5 +1,6 @@
 "use client";
 
+import Cookies from "js-cookie";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -35,14 +36,16 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
   const searchParams = useSearchParams();
 
-  // Store token from URL in cookies if present
   useEffect(() => {
     const token = searchParams.get("token");
 
     if (token) {
-      document.cookie = `discord=${token}; path=/; max-age=${
-        7 * 24 * 60 * 60
-      }; SameSite=Lax; Secure`;
+      Cookies.set("token", token, {
+        path: "/",
+        expires: 7,
+        sameSite: "Lax",
+        secure: true,
+      });
       router.replace("/");
     }
   }, [searchParams, router]);

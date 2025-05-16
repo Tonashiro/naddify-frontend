@@ -4,6 +4,12 @@ import React from "react";
 import Image from "next/image";
 import { AddProjectCard } from "@/components/AddProjectCard";
 import { useUserContext } from "@/contexts/userContext";
+import { IStats } from "@/app/api/stats/route";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
+
+interface IHero {
+  stats: IStats;
+}
 
 /**
  * The `Hero` component is a React functional component that renders a hero section
@@ -24,7 +30,7 @@ import { useUserContext } from "@/contexts/userContext";
  * );
  * ```
  */
-export const Hero: React.FC = () => {
+export const Hero: React.FC<IHero> = ({ stats }) => {
   const { user } = useUserContext();
 
   return (
@@ -37,7 +43,7 @@ export const Hero: React.FC = () => {
           Discover and vote on the growing ecosystem of projects building on{" "}
         </p>
         <Image
-          alt="MegaETH"
+          alt="Monad Logo"
           src="/images/monad-logo.svg"
           width={140}
           height={28}
@@ -47,15 +53,15 @@ export const Hero: React.FC = () => {
       </div>
       <div className="flex items-center justify-center gap-8 mt-6 mb-6">
         <div className="text-center">
-          <div className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-indigo-400 bg-clip-text text-transparent">
-            55,446
-          </div>
+          <AnimatedNumber total={stats?.totalProjects ?? 0} />
+          <div className="text-md text-gray-400 mt-1">Projects</div>
+        </div>
+        <div className="text-center">
+          <AnimatedNumber total={stats?.totalVotes ?? 0} />
           <div className="text-md text-gray-400 mt-1">Total Votes</div>
         </div>
         <div className="text-center">
-          <div className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-indigo-400 bg-clip-text text-transparent">
-            5,201
-          </div>
+          <AnimatedNumber total={stats?.uniqueVoters ?? 0} />
           <div className="text-md text-gray-400 mt-1">Unique Voters</div>
         </div>
       </div>

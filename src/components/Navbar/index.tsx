@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserMenu } from "@/components/UserMenu";
+import { useUserContext } from "@/contexts/userContext";
 
 /**
  * A reusable navigation item component with hover effects.
@@ -59,6 +60,7 @@ export const NavItem: React.FC<{ href: string; label: string }> = ({
  */
 export const Navbar: React.FC = () => {
   const router = useRouter();
+  const { user } = useUserContext();
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-gray-900/80 backdrop-blur-md border-b border-gray-800 z-50">
@@ -76,7 +78,10 @@ export const Navbar: React.FC = () => {
 
         <ul className="hidden md:flex items-center space-x-6">
           <NavItem href="/" label="Home" />
-          <NavItem href="/projects/add" label="Add Project" />
+          <NavItem href="/leaderboard" label="Leaderboard" />
+          {user?.is_admin && (
+            <NavItem href="/projects/add" label="Add Project" />
+          )}
         </ul>
 
         <UserMenu />

@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import { Spinner } from "@/components/Spinner";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Disclaimer } from "@/components/Disclaimer";
 
 // Import Geist fonts as CSS variables
 const geistSans = Geist({
@@ -24,7 +25,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nadvisor",
+  title: "Nadsverify",
   description: "A community-driven platform for project curation on Monad",
 };
 
@@ -51,6 +52,7 @@ export default function RootLayout({
           font-sans antialiased
         `}
           >
+            <Disclaimer />
             <div className="fixed z-[-1] inset-0 min-h-screen w-screen bg-gradient pointer-events-none" />
             <Navbar />
             <Container>{children}</Container>

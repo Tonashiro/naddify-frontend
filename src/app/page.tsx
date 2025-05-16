@@ -7,30 +7,24 @@ import { ProjectFilter } from "@/components/ProjectFilter";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Spinner } from "@/components/Spinner";
 import { PROJECTS_AMOUNT_LIMIT } from "@/constants";
-import { TProjectStatus } from "@/app/api/projects/route";
 
 export default function Home() {
-  const [selectedStatuses, setSelectedStatuses] = useState<TProjectStatus[]>(
-    []
-  );
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const queryKey = ["projects", selectedStatuses, selectedCategories];
+  const queryKey = ["projects", selectedCategories];
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
       queryKey,
       initialPageParam: 1,
       queryFn: async ({ pageParam = 1 }) => {
-        const statusParam = selectedStatuses.join(",");
         const categoryParam = selectedCategories.join(",");
 
         const url = new URL(`/api/projects`, window.location.origin);
         url.searchParams.set("page", pageParam.toString());
         url.searchParams.set("limit", PROJECTS_AMOUNT_LIMIT.toString());
-        if (statusParam) url.searchParams.set("status", statusParam);
         if (categoryParam) url.searchParams.set("category", categoryParam);
 
         const res = await fetch(url.toString(), {
@@ -49,7 +43,7 @@ export default function Home() {
           : undefined;
       },
       refetchOnWindowFocus: "always",
-      staleTime: 60 * 1000,
+      refetchInterval: 60 * 1000,
       retry: 1,
     });
 
@@ -89,6 +83,19 @@ export default function Home() {
     },
   });
 
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
+    queryKey: ["stats"],
+    queryFn: async () => {
+      const res = await fetch("/api/stats");
+      if (!res.ok) {
+        throw new Error("Failed to fetch categories");
+      }
+      return res.json();
+    },
+    refetchOnWindowFocus: "always",
+    refetchInterval: 60 * 1000,
+  });
+
   useEffect(() => {
     if (!isLoading && !isLoadingCategories && data && categories) {
       setIsInitialLoadComplete(true);
@@ -101,7 +108,8 @@ export default function Home() {
       .filter((project) => project.status !== "SCAM") ?? [];
 
   const isInitialLoading =
-    !isInitialLoadComplete && (isLoading || isLoadingCategories);
+    !isInitialLoadComplete &&
+    (isLoading || isLoadingCategories || isLoadingStats);
 
   if (isInitialLoading) {
     return (
@@ -113,17 +121,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col mx-auto w-full px-[5%] max-w-[1920px] text-text-primary">
-      <Hero />
+      <Hero stats={stats} />
 
       {isLoadingCategories ? (
         <div className="flex justify-center items-center h-screen">
           <Spinner />
         </div>
       ) : (
-        <div className="relative flex flex-col lg:flex-row gap-6">
+        <div className="relative flex flex-col gap-6">
           <ProjectFilter
-            selectedStatuses={selectedStatuses}
-            setSelectedStatuses={setSelectedStatuses}
             selectedCategories={selectedCategories}
             setSelectedCategories={setSelectedCategories}
             categories={categories}

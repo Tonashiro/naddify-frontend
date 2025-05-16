@@ -19,7 +19,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { IPagination, IProject } from "@/app/api/projects/route";
 import { useUserContext } from "@/contexts/userContext";
-import { Pencil } from "lucide-react";
+// import { Pencil } from "lucide-react";
 import { DeleteProjectModal } from "@/components/DeleteProjectModal";
 import { useRouter } from "next/navigation";
 
@@ -148,6 +148,16 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
         className="relative min-h-[280px] cursor-pointer"
         onClick={() => !isPreview && router.push(`/projects/${project.id}`)}
       >
+        {project.nads_verified && (
+          <div className="absolute top-[-20px] left-[-20px] pointer-events-none">
+            <Image
+              src="/images/nads_verified.svg"
+              width={80}
+              height={80}
+              alt="Nads verified badge"
+            />
+          </div>
+        )}
         <div className="absolute top-0 left-0 inset-0 w-full h-[120px] rounded-t-xl brightness-75 z-[-1] bg-purple-600/50">
           {project.banner_url && (
             <Image
@@ -160,7 +170,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
           )}
         </div>
 
-        {!isPreview && (
+        {/* {!isPreview && (
           <div className="absolute top-4 right-4">
             <button
               onClick={(e) => {
@@ -172,7 +182,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
               <Pencil size={20} />
             </button>
           </div>
-        )}
+        )} */}
 
         <div className="z-[-1] absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(134,0,255,0.07),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <CardHeader className="pt-[64px] flex flex-col">
