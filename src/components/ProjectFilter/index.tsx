@@ -50,7 +50,7 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
             <SelectItem key="all" value="all">
               All
             </SelectItem>
-            {categories.map((cat) => (
+            {categories?.map((cat) => (
               <SelectItem key={cat.id} value={cat.id}>
                 {cat.name}
               </SelectItem>

@@ -50,15 +50,19 @@ export default function Profile() {
             {user?.username}
           </h1>
 
-          <Link
-            href={twitterAuthUrl}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2 w-fit"
-          >
-            Connect Twitter
-          </Link>
-
+          {!user?.twitter_username ? (
+            <Link
+              href={twitterAuthUrl}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2 w-fit"
+            >
+              Connect Twitter
+            </Link>
+          ) : (
+            <h1>{user.twitter_username}</h1>
+          )}
           <Link
             href={`/api/twitter/intent?text=${encodeURIComponent(tweetText)}`}
+            target="_blank"
           >
             Post on Twitter
           </Link>

@@ -20,6 +20,8 @@ export interface IUser {
   is_admin: boolean;
   has_monad_role: boolean;
   created_at: string;
+  twitter_username: string | null;
+  twitter_id: string | null;
 }
 
 interface IUserContext {

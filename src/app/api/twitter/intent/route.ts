@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   const text = searchParams.get("text") || "";
 
   const encodedText = encodeURIComponent(text);
-  const intentUrl = `https://twitter.com/intent/tweet?text=${encodedText}`;
+  const intentUrl = `https://x.com/intent/tweet?text=${encodedText}`;
 
   return NextResponse.redirect(intentUrl);
 }
