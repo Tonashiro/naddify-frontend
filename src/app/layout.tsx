@@ -11,7 +11,6 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Disclaimer } from "@/components/Disclaimer";
 
-// Import Geist fonts as CSS variables
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,8 +24,67 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nadsverify",
+  title: "Naddify",
   description: "A community-driven platform for project curation on Monad",
+  keywords: [
+    "Naddify",
+    "Monad projects",
+    "project curation",
+    "blockchain discovery",
+    "crypto reputation",
+    "verify Web3 projects",
+    "Monad ecosystem",
+    "Naddify platform",
+    "decentralized project ranking",
+    "community votes blockchain",
+    "NFT projects Monad",
+    "Monad Web3 apps",
+    "trustworthy crypto projects",
+    "scam detection Web3",
+  ],
+  authors: [
+    { name: "Tonashiro" },
+    { name: "1stBenjaNAD" },
+    { name: "Toadster69" },
+    { name: "andalfthegreat" },
+  ],
+  creator: "Tonashiro",
+  publisher: "Tonashiro",
+  metadataBase: new URL("https://www.nadsverify.xyz"),
+  alternates: {
+    canonical: "https://www.nadsverify.xyz",
+  },
+  openGraph: {
+    title: "Naddify",
+    description: "A community-driven platform for project curation on Monad",
+    url: "https://www.nadsverify.xyz",
+    siteName: "Naddify",
+    images: [
+      {
+        url: "https://www.nadsverify.xyz/twitter_card.png",
+        width: 1200,
+        height: 630,
+        alt: "Naddify- A community-driven platform for project curation on Monad",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@naddify_xyz",
+    creator: "@naddify_xyz",
+    title: "Naddify",
+    description: "A community-driven platform for project curation on Monad",
+    images: [
+      {
+        url: "https://www.nadsverify.xyz/twitter_card.png",
+        width: 1200,
+        height: 630,
+        alt: "Naddify- A community-driven platform for project curation on Monad",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

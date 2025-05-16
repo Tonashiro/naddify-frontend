@@ -33,7 +33,7 @@ export default function Profile() {
       </div>
     );
 
-  const tweetText = "Hey everyone! I just found out about Nadvisor 🧠 #Web3";
+  const tweetText = "Hey everyone! I just found out about Naddify 🧠 #Web3";
 
   return (
     <div className="flex flex-col my-[5%]">

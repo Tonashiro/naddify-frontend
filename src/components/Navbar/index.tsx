@@ -67,11 +67,11 @@ export const Navbar: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center">
           <Image
-            src="/images/monad-logo.svg"
-            alt="Project Logo"
-            width={150}
-            height={150}
-            className="cursor-pointer"
+            src="/images/naddify.webp"
+            alt="Naddify Logo"
+            width={50}
+            height={50}
+            className="rounded-full cursor-pointer hover:scale-105 transition-transform duration-300"
             onClick={() => router.push("/")}
           />
         </div>

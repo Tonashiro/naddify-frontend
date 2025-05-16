@@ -39,7 +39,7 @@ export const Disclaimer: React.FC = () => {
           <DialogDescription className="space-y-4 text-lg text-justify">
             <p>
               The rankings and ratings displayed on this website are entirely
-              community-driven and are not verified or endorsed by NadsVerify.
+              community-driven and are not verified or endorsed by Naddify.
               While we strive to maintain a safe and transparent platform, we do
               not take responsibility for the accuracy, reliability, or
               legitimacy of any project listed. A high rank does not imply a
