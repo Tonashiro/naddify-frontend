@@ -2,6 +2,13 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export type TProjectStatus = "PENDING" | "TRUSTABLE" | "SCAM" | "RUG";
+export type TDiscordRoles = "MON" | "OG" | "NAD" | "FULL_ACCESS";
+
+export type TVoteBreakdown = {
+  role: TDiscordRoles;
+  votes_for: number;
+  votes_against: number;
+};
 
 export interface IProject {
   id: string;
@@ -16,6 +23,7 @@ export interface IProject {
   status: TProjectStatus;
   votes_for: number;
   votes_against: number;
+  votes_breakdown?: Array<TVoteBreakdown>;
   nads_verified: boolean;
   created_by?: {
     username: string;

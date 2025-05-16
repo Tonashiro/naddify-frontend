@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 // Define button variants for "for" and "against"
 const voteButtonVariants = cva(
-  "flex items-center gap-2 px-2 py-2 sm:px-3.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer bg-white/[0.05] shadow-[0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none disabled:cursor-not-allowed disabled:opacity-50",
+  "flex items-center gap-2 p-2 sm:px-3.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer bg-white/[0.05] shadow-[0_2px_4px_rgba(0,0,0,0.02)] disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {

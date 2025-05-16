@@ -43,6 +43,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "js-cookie": "^3.0.5",
+    "react-responsive": "^10.0.1",
     "react-spring": "^10.0.0",
     "react-toastify": "^11.0.5",
     "tailwindcss": "^4",

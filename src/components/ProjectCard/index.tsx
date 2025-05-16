@@ -19,9 +19,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { IPagination, IProject } from "@/app/api/projects/route";
 import { useUserContext } from "@/contexts/userContext";
-// import { Pencil } from "lucide-react";
+import { InfoIcon } from "lucide-react";
 import { DeleteProjectModal } from "@/components/DeleteProjectModal";
 import { useRouter } from "next/navigation";
+import { VotesBreakdown } from "@/components/VotesBreakdown";
 
 export interface IProjectCard {
   project: IProject;
@@ -61,6 +62,9 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
   const [pendingVote, setPendingVote] = useState<"FOR" | "AGAINST" | null>(
     null
   );
+  const [hoveredVoteType, setHoveredVoteType] = useState<
+    "FOR" | "AGAINST" | "BOTH" | null
+  >(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const { user, connectDiscord } = useUserContext();
@@ -224,28 +228,85 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
             )}
           </div>
           <div className="flex items-center gap-1 sm:gap-2 text-sm">
-            <VoteButton
-              variant="for"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!isPreview) mutate("FOR");
-              }}
-              isPending={pendingVote === "FOR"}
-              disabled={pendingVote === "AGAINST"}
+            <div
+              className="relative"
+              onMouseEnter={() => setHoveredVoteType("FOR")}
+              onMouseLeave={() => setHoveredVoteType(null)}
             >
-              {project.votes_for}
-            </VoteButton>
-            <VoteButton
-              variant="against"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!isPreview) mutate("AGAINST");
-              }}
-              isPending={pendingVote === "AGAINST"}
-              disabled={pendingVote === "FOR"}
+              <VoteButton
+                variant="for"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isPreview) mutate("FOR");
+                }}
+                isPending={pendingVote === "FOR"}
+                disabled={pendingVote === "AGAINST"}
+              >
+                {project.votes_for}
+              </VoteButton>
+              {project.votes_breakdown &&
+                project.votes_breakdown.some((vote) => vote.votes_for > 0) && (
+                  <VotesBreakdown
+                    votesBreakdown={project.votes_breakdown}
+                    type="FOR"
+                    isOpen={hoveredVoteType === "FOR"}
+                  />
+                )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => setHoveredVoteType("AGAINST")}
+              onMouseLeave={() => setHoveredVoteType(null)}
             >
-              {project.votes_against}
-            </VoteButton>
+              <VoteButton
+                variant="against"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isPreview) mutate("AGAINST");
+                }}
+                isPending={pendingVote === "AGAINST"}
+                disabled={pendingVote === "FOR"}
+              >
+                {project.votes_against}
+              </VoteButton>
+              {project.votes_breakdown &&
+                project.votes_breakdown.some(
+                  (vote) => vote.votes_against > 0
+                ) && (
+                  <VotesBreakdown
+                    votesBreakdown={project.votes_breakdown}
+                    type="AGAINST"
+                    isOpen={hoveredVoteType === "AGAINST"}
+                  />
+                )}
+            </div>
+
+            <div className="relative">
+              {project.votes_breakdown &&
+                project.votes_breakdown.some(
+                  (vote) => vote.votes_against > 0 || vote.votes_for > 0
+                ) && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (hoveredVoteType !== "BOTH")
+                          setHoveredVoteType("BOTH");
+                        else setHoveredVoteType(null);
+                      }}
+                      className="lg:hidden p-2 sm:px-3.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer bg-white/[0.05] shadow-[0_2px_4px_rgba(0,0,0,0.02)]"
+                    >
+                      <InfoIcon />
+                    </button>
+
+                    <VotesBreakdown
+                      votesBreakdown={project.votes_breakdown}
+                      type="BOTH"
+                      isOpen={hoveredVoteType === "BOTH"}
+                    />
+                  </>
+                )}
+            </div>
           </div>
         </CardFooter>
       </Card>
