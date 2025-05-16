@@ -5,14 +5,13 @@ import { useUserContext } from "@/contexts/userContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Cookies from "js-cookie";
 
 export default function Profile() {
   const { user, isLoading } = useUserContext();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isTweeting, setIsTweeting] = useState(false);
 
   if (!user && !isLoading) router.push("/");
 
@@ -27,41 +26,14 @@ export default function Profile() {
   const token = Cookies.get("token");
   const twitterAuthUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/twitter?state=${token}`;
 
-  const postTweet = async () => {
-    setIsTweeting(true);
-    try {
-      const res = await fetch("/api/twitter/post", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: "Hello from Nadsverify 👋" }),
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        alert("Tweet posted successfully!");
-        console.log(result);
-      } else {
-        alert("Failed to post tweet: " + result.message);
-        console.error(result);
-      }
-    } catch (err) {
-      console.error("Unexpected error posting tweet:", err);
-      alert("Unexpected error");
-    } finally {
-      setIsTweeting(false);
-    }
-  };
-
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
       </div>
     );
+
+  const tweetText = "Hey everyone! I just found out about Nadvisor 🧠 #Web3";
 
   return (
     <div className="flex flex-col my-[5%]">
@@ -85,13 +57,11 @@ export default function Profile() {
             Connect Twitter
           </Link>
 
-          <button
-            onClick={postTweet}
-            disabled={isTweeting}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-2 w-fit disabled:opacity-50"
+          <Link
+            href={`/api/twitter/intent?text=${encodeURIComponent(tweetText)}`}
           >
-            {isTweeting ? "Posting..." : "Tweet from my account"}
-          </button>
+            Post on Twitter
+          </Link>
         </div>
       </div>
     </div>
