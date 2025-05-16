@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import Cookies from "js-cookie";
 
 export default function Profile() {
   const { user, isLoading } = useUserContext();
@@ -29,6 +30,9 @@ export default function Profile() {
       </div>
     );
 
+  const token = Cookies.get("token"); // already set after Discord login
+  const twitterAuthUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/twitter?state=${token}`;
+
   return (
     <div className="flex flex-col my-[5%]">
       <div className="flex gap-4">
@@ -44,7 +48,7 @@ export default function Profile() {
             {user?.username}
           </h1>
           <Link
-            href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/twitter`}
+            href={twitterAuthUrl}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4 w-fit"
           >
             Connect Twitter
