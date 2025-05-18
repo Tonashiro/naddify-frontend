@@ -13,6 +13,7 @@ import { useMediaQuery } from "react-responsive";
 import { cn } from "@/lib/utils";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { PopoverArrow } from "@radix-ui/react-popover";
+import { RoleCircle } from "@/components/Icons/RoleCircle";
 
 interface IVotesBreakdownProps {
   votesBreakdown: TVoteBreakdown[];
@@ -60,7 +61,15 @@ export const VotesBreakdown: React.FC<IVotesBreakdownProps> = ({
         <Separator className="my-2" />
         <div className="flex flex-col gap-2">
           {votesBreakdown
-            .filter((vote) => vote.votes_for > 0 || vote.votes_against > 0)
+            .filter((vote) => {
+              if (type === "FOR") {
+                return vote.votes_for > 0;
+              }
+              if (type === "AGAINST") {
+                return vote.votes_against > 0;
+              }
+              return vote.votes_for > 0 || vote.votes_against > 0;
+            })
             .map((vote) => {
               const colorMapping = {
                 MON: "#695CBE",
@@ -74,12 +83,18 @@ export const VotesBreakdown: React.FC<IVotesBreakdownProps> = ({
                   key={vote.role}
                   className="flex justify-between items-center"
                 >
-                  <span
-                    className={cn("text-sm font-medium")}
-                    style={{ color: colorMapping[vote.role] }}
+                  <div
+                    className="flex gap-1 items-center border px-2 rounded-full"
+                    style={{ borderColor: colorMapping[vote.role] }}
                   >
-                    {vote.role}
-                  </span>
+                    <RoleCircle color={colorMapping[vote.role]} />
+                    <span
+                      className={cn("text-sm font-medium")}
+                      style={{ color: colorMapping[vote.role] }}
+                    >
+                      {vote.role}
+                    </span>
+                  </div>
                   <span
                     className={cn(
                       "font-bold",
