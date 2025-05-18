@@ -11,18 +11,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { IProject } from "@/app/api/projects/route";
 import { ICategory } from "@/app/api/categories/route";
 import { projectSchema } from "@/components/ProjectForm/schema";
 import { useCallback, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const isFieldRequired = (fieldName: string): boolean => {
   const field =
@@ -278,30 +272,50 @@ export const ProjectForm: React.FC<IProjectForm> = ({
         />
 
         <FormField
-          name="category"
-          control={control}
-          render={({ field }) => (
+          control={form.control}
+          name="categories"
+          render={() => (
             <FormItem>
-              <FormLabel>
-                Category{" "}
-                {isFieldRequired("category") && (
-                  <span className="text-red-500">*</span>
-                )}
-              </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {categoryOptions.map((opt) => (
-                    <SelectItem key={opt.id} value={opt.id}>
-                      {opt.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormLabel>Categories</FormLabel>
+              <div className="flex flex-wrap gap-2 max-w-sm">
+                {categoryOptions.map((category) => (
+                  <FormField
+                    key={category.id}
+                    control={form.control}
+                    name="categories"
+                    render={({ field }) => {
+                      const isDisabled =
+                        field.value?.length >= 3 &&
+                        !field.value.includes(category.id);
+
+                      return (
+                        <FormItem className="flex items-center">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(category.id)}
+                              onCheckedChange={(checked) => {
+                                if (checked && field.value.length < 3) {
+                                  field.onChange([...field.value, category.id]);
+                                } else if (!checked) {
+                                  field.onChange(
+                                    field.value?.filter(
+                                      (value) => value !== category.id
+                                    )
+                                  );
+                                }
+                              }}
+                              disabled={isDisabled} // Disable the checkbox dynamically
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm font-normal">
+                            {category.name}
+                          </FormLabel>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                ))}
+              </div>
               <FormMessage />
             </FormItem>
           )}

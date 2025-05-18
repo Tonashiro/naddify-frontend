@@ -87,11 +87,6 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const mappedBody = {
-      ...body,
-      categories: [body.category],
-    };
-
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`,
       {
@@ -100,7 +95,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(mappedBody),
+        body: JSON.stringify(body),
       }
     );
 

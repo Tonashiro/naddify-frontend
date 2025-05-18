@@ -98,9 +98,9 @@ export default function RootLayout({
       <Analytics />
       <Suspense
         fallback={
-          <div className="flex justify-center items-center h-screen w-screen">
+          <body className="flex justify-center items-center h-screen w-screen">
             <Spinner />
-          </div>
+          </body>
         }
       >
         <Providers>

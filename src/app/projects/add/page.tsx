@@ -33,7 +33,7 @@ export default function AddProject() {
       website: "",
       twitter: "",
       discord: "",
-      category: "",
+      categories: [],
       logo_url: undefined,
       banner_url: null,
     },
@@ -122,9 +122,7 @@ export default function AddProject() {
 
       toast.success("Project added successfully!");
 
-      setTimeout(() => {
-        router.push(`/projects/${newProject.id}`);
-      }, 1000);
+      router.push(`/`);
     },
     onError: (error) => {
       toast.error(error.message || "Something went wrong!");
@@ -185,17 +183,12 @@ export default function AddProject() {
               website: formValues.website || "",
               twitter: formValues.twitter || "",
               discord: formValues.discord || "",
-              categories: formValues.category
-                ? [
-                    {
-                      id: formValues.category,
-                      name:
-                        categoryOptions.find(
-                          (opt) => opt.id === formValues.category
-                        )?.name || "Category Name",
-                    },
-                  ]
-                : [],
+              categories: formValues.categories.map((categoryId) => ({
+                id: categoryId,
+                name:
+                  categoryOptions.find((opt) => opt.id === categoryId)?.name ||
+                  "Category Name",
+              })),
               logo_url: formValues.logo_url
                 ? URL.createObjectURL(formValues.logo_url)
                 : "/images/monad.webp",

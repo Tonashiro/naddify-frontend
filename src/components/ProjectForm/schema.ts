@@ -25,7 +25,10 @@ export const projectSchema = z.object({
     .refine((url) => url === "" || url?.startsWith("https://discord.gg/"), {
       message: "Discord must start with https://discord.gg/",
     }),
-  category: z.string().min(1, "Category is required"),
+  categories: z
+    .array(z.string())
+    .min(1, "At least one category is required")
+    .max(3, "You can select up to 3 categories"),
   logo_url: z
     .instanceof(File, { message: "Logo is required" })
     .refine((file) => file.size <= 1 * 1024 * 1024, {
