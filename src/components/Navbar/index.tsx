@@ -3,9 +3,9 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { UserMenu } from "@/components/UserMenu";
 import { useUserContext } from "@/contexts/userContext";
+import { BetaUserModal } from "@/components/BetaUserModal";
 
 /**
  * A reusable navigation item component with hover effects.
@@ -59,32 +59,35 @@ export const NavItem: React.FC<{ href: string; label: string }> = ({
  * @returns A JSX element representing the navigation bar.
  */
 export const Navbar: React.FC = () => {
-  const router = useRouter();
   const { user } = useUserContext();
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-gray-900/80 backdrop-blur-md border-b border-gray-800 z-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center">
-          <Image
-            src="/images/naddify.webp"
-            alt="Naddify Logo"
-            width={50}
-            height={50}
-            className="rounded-full cursor-pointer hover:scale-105 transition-transform duration-300"
-            onClick={() => router.push("/")}
-          />
+          <Link href="/">
+            <Image
+              src="/images/naddify.webp"
+              alt="Naddify Logo"
+              width={50}
+              height={50}
+              className="rounded-full cursor-pointer hover:scale-105 transition-transform duration-300"
+            />
+          </Link>
         </div>
 
         <ul className="hidden md:flex items-center space-x-6">
           <NavItem href="/" label="Home" />
-          <NavItem href="/leaderboard" label="Leaderboard" />
+          <NavItem href="/about" label="About" />
           {user?.is_admin && (
             <NavItem href="/projects/add" label="Add Project" />
           )}
         </ul>
 
-        <UserMenu />
+        <div className="flex items-center gap-2">
+          <UserMenu />
+          {user?.id && <BetaUserModal />}
+        </div>
       </div>
     </nav>
   );

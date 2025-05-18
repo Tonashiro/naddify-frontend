@@ -10,12 +10,14 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react";
 
 export interface IUser {
   id: string;
   discord_id: string;
   username: string;
+  wallet_address: string | null;
   avatar: string | null;
   is_admin: boolean;
   has_monad_role: boolean;
@@ -26,6 +28,7 @@ export interface IUser {
 
 interface IUserContext {
   user: IUser | null;
+  setUser: (user: IUser | null) => void;
   isLoading: boolean;
   refetch: () => void;
   connectDiscord: () => void;
@@ -35,7 +38,7 @@ const UserContext = createContext<IUserContext | undefined>(undefined);
 
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-
+  const [user, setUser] = useState<IUser | null>(null);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -57,11 +60,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     router.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/discord`);
   }, [router]);
 
-  const {
-    data: user,
-    isLoading,
-    refetch,
-  } = useQuery<IUser | null>({
+  const { isLoading, refetch } = useQuery<IUser | null>({
     queryKey: ["user"],
     queryFn: async () => {
       const res = await fetch("/api/user", {
@@ -69,7 +68,10 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (res.ok) {
-        return res.json();
+        const userData = await res.json();
+        setUser(userData);
+
+        return userData;
       } else {
         throw new Error("Failed to fetch user");
       }
@@ -79,7 +81,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const contextValue = useMemo(
-    () => ({ user: user ?? null, isLoading, refetch, connectDiscord }),
+    () => ({ user, isLoading, refetch, connectDiscord, setUser }),
     [user, isLoading, refetch, connectDiscord]
   );
 
