@@ -7,6 +7,7 @@ import { ProjectFilter } from "@/components/ProjectFilter";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Spinner } from "@/components/Spinner";
 import { PROJECTS_AMOUNT_LIMIT } from "@/constants";
+import { StatsSection } from "@/components/StatsSection";
 
 export default function Home() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -121,7 +122,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col mx-auto w-full px-[5%] max-w-[1920px] text-text-primary">
-      <Hero stats={stats} />
+      <Hero />
+
+      <StatsSection stats={stats} />
 
       {isLoadingCategories ? (
         <div className="flex justify-center items-center h-screen">

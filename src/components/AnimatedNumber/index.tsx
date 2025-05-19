@@ -12,7 +12,7 @@ export const AnimatedNumber: React.FC<IAnimatedNumber> = ({ total }) => {
   });
 
   return (
-    <animated.span className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-indigo-400 bg-clip-text text-transparent">
+    <animated.span className="text-3xl font-bold text-white">
       {number.to((n) => n.toFixed(0))}
     </animated.span>
   );

@@ -12,7 +12,7 @@ export const AddProjectCard: React.FC = () => {
 
   return (
     <Card
-      className="group relative overflow-hidden cursor-pointer max-w-xs mx-auto"
+      className="group relative overflow-hidden cursor-pointer max-w-xs mx-auto mt-[5%]"
       onClick={() => router.push("/projects/add")}
     >
       <div className="absolute inset-0 bg-gradient-to-t from-purple-800/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
