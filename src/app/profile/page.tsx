@@ -1,30 +1,19 @@
 "use client";
 
 import { Spinner } from "@/components/Spinner";
+import { BETA_CUTOFF_DATE } from "@/constants";
 import { useUserContext } from "@/contexts/userContext";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function Profile() {
   const { user, isLoading } = useUserContext();
   const router = useRouter();
-  const searchParams = useSearchParams();
+
+  const isBetaUser =
+    user?.created_at && new Date(user.created_at) < BETA_CUTOFF_DATE;
 
   if (!user && !isLoading) router.push("/");
-
-  useEffect(() => {
-    const twitterConnected = searchParams.get("twitter_connect");
-
-    if (twitterConnected) {
-      router.replace("/profile");
-    }
-  }, [searchParams, router]);
-
-  const token = Cookies.get("token");
-  const twitterAuthUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/twitter?state=${token}`;
 
   if (isLoading)
     return (
@@ -32,8 +21,6 @@ export default function Profile() {
         <Spinner />
       </div>
     );
-
-  const tweetText = "Hey everyone! I just found out about Naddify 🧠 #Web3";
 
   return (
     <div className="flex flex-col my-[5%]">
@@ -43,29 +30,15 @@ export default function Profile() {
           alt="User Avatar"
           width={100}
           height={100}
-          className="rounded-full cursor-pointer"
+          className="rounded-full pointer-events-none"
         />
         <div className="flex flex-col gap-4">
           <h1 className="text-2xl font-bold mt-4 capitalize">
             {user?.username}
           </h1>
-
-          {!user?.twitter_username ? (
-            <Link
-              href={twitterAuthUrl}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2 w-fit"
-            >
-              Connect Twitter
-            </Link>
-          ) : (
-            <h1>{user.twitter_username}</h1>
+          {isBetaUser && (
+            <h2 className="text-lg font-semibold text-white">BETA USER</h2>
           )}
-          <Link
-            href={`/api/twitter/intent?text=${encodeURIComponent(tweetText)}`}
-            target="_blank"
-          >
-            Post on Twitter
-          </Link>
         </div>
       </div>
     </div>

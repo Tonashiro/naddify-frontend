@@ -20,7 +20,7 @@ export interface IUser {
   wallet_address: string | null;
   avatar: string | null;
   is_admin: boolean;
-  has_monad_role: boolean;
+  can_vote: boolean;
   created_at: string;
   twitter_username: string | null;
   twitter_id: string | null;

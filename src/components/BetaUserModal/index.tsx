@@ -98,8 +98,7 @@ export const BetaUserModal: React.FC = () => {
         <DialogHeader>
           <DialogTitle>Beta User</DialogTitle>
           <DialogDescription>
-            Congratulations, you are a beta user! Add your wallet to receive
-            something in the future.
+            Congratulations, you are a beta user! Add your wallet below.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

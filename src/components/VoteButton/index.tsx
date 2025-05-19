@@ -9,8 +9,8 @@ const voteButtonVariants = cva(
   {
     variants: {
       variant: {
-        for: "text-emerald-400/60 hover:text-emerald-400 hover:bg-emerald-500/10 ",
-        against: "text-red-400/60 hover:text-red-400 hover:bg-red-500/10",
+        for: "text-emerald-400 hover:text-emerald-500 hover:bg-emerald-500/10 ",
+        against: "text-red-400 hover:text-red-500 hover:bg-red-500/10",
       },
     },
     defaultVariants: {
@@ -24,7 +24,7 @@ const voteButtonVariants = cva(
  */
 const ForIcon: React.FC = () => (
   <svg
-    className="h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-200 text-emerald-400/60"
+    className="h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-200 text-emerald-300"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -39,7 +39,7 @@ const ForIcon: React.FC = () => (
  */
 const AgainstIcon: React.FC = () => (
   <svg
-    className="h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-200 text-red-400/60"
+    className="h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-200 text-red-400"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"

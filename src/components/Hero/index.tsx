@@ -30,11 +30,11 @@ export const Hero: React.FC = () => {
   return (
     <section className="text-center max-w-3xl mx-auto relative mt-[64px] mb-[5%] pt-[5%]">
       <div className="relative">
-        <h2 className="text-3xl sm:text-5xl line-height-normal font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent mb-5 leading-[1.15]">
-          Ecosystem Projects
+        <h2 className="text-3xl sm:text-5xl line-height-normal font-bold bg-gradient-to-r from-purple-300 via-purple-500 to-indigo-400 bg-clip-text text-transparent mb-5 leading-[1.15]">
+          Naddify
         </h2>
         <p className="text-lg sm:text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto font-medium">
-          Discover and vote on the growing ecosystem of projects building on{" "}
+          A platform for community-led project discovery on
         </p>
         <Image
           alt="Monad Logo"

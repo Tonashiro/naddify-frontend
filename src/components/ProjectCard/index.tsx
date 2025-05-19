@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { VotesBreakdown } from "@/components/VotesBreakdown";
 import { NadsVerifiedPopover } from "@/components/NadsVerifiedPopover";
 import { TVoteType } from "@/app/api/votes/[projectId]/route";
+import { IStats } from "@/app/api/stats/route";
 
 export interface IProjectCard {
   project: IProject;
@@ -140,6 +141,22 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
             };
           }
         );
+      });
+
+      // Update the stats query cache
+      queryClient.setQueryData<IStats>(["stats"], (oldStats) => {
+        if (!oldStats) return oldStats;
+
+        // Update the totalVotes count
+        const updatedTotalVotes =
+          message === "Vote removed successfully"
+            ? oldStats.totalVotes - 1
+            : oldStats.totalVotes + 1;
+
+        return {
+          ...oldStats,
+          totalVotes: updatedTotalVotes,
+        };
       });
 
       queryClient.invalidateQueries({ queryKey: ["projects"] });

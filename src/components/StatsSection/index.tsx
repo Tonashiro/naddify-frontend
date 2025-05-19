@@ -19,7 +19,7 @@ export const StatsSection: React.FC<IStatsSectionProps> = ({ stats }) => {
           "w-full bg-gradient-to-t from-purple-700 via-purple-800 to-indigo-900 text-white shadow-lg border-0"
         )}
       >
-        <CardContent className="flex flex-col items-center justify-center py-12">
+        <CardContent className="flex flex-col items-center justify-center">
           <AnimatedNumber total={stats?.totalVotes} />
           <CardTitle className="text-lg sm:text-xl mt-2">Total Votes</CardTitle>
         </CardContent>
@@ -30,7 +30,7 @@ export const StatsSection: React.FC<IStatsSectionProps> = ({ stats }) => {
         <Card className="text-center bg-gradient-to-r from-zinc-900 via-neutral-900 to-zinc-800 shadow-md">
           <CardContent>
             <AnimatedNumber total={stats?.totalProjects} />
-            <CardTitle className="text-md sm:text-lg mt-2">
+            <CardTitle className="text-md sm:text-lg">
               Total Projects
             </CardTitle>
           </CardContent>
@@ -38,7 +38,7 @@ export const StatsSection: React.FC<IStatsSectionProps> = ({ stats }) => {
         <Card className="text-center bg-gradient-to-r from-zinc-900 via-neutral-900 to-zinc-800 shadow-md">
           <CardContent>
             <AnimatedNumber total={stats?.uniqueVoters} />
-            <CardTitle className="text-md sm:text-lg mt-2">
+            <CardTitle className="text-md sm:text-lg">
               Unique voters
             </CardTitle>
           </CardContent>
