@@ -52,7 +52,7 @@
 body {
   background: var(--color-background);
   color: var(--color-text-primary);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   min-height: 100vh;
   scroll-behavior: smooth;
 }

@@ -158,20 +158,20 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
   return (
     <>
       <Card id={project.id} key={project.id} className="relative min-h-[280px]">
-        <div className="absolute top-0 left-0 inset-0 w-full h-[120px] rounded-t-xl brightness-75 z-[-1] bg-purple-600/50">
+        <div className="absolute top-0 left-0 inset-0 w-full h-[150px] rounded-t-xl bg-purple-600/50">
           {project.banner_url && (
             <Image
               src={project.banner_url}
-              height={120}
+              height={150}
               width={280}
               alt={`${project.name} banner`}
-              className="w-full h-[120px] max-h-[120px] z-[-1] rounded-t-xl bg-purple-500"
+              className="w-full h-[150px] max-h-[150px] z-[-1] rounded-t-xl bg-purple-500"
             />
           )}
         </div>
 
         {!isPreview && user?.is_admin && (
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 z-20">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -190,8 +190,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
           </div>
         )}
 
-        <div className="z-[-1] absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(134,0,255,0.07),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <CardHeader className="pt-[64px] flex flex-col">
+        <CardHeader className="pt-[93px] flex flex-col z-10">
           <Image
             src={project.logo_url ?? "/images/monad.webp"}
             alt={`${project.name} logo`}
@@ -226,7 +225,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
         <CardContent>
           <CardDescription>{project.description}</CardDescription>
         </CardContent>
-        <CardFooter className="flex justify-between items-center border-t border-white/[0.1]">
+        <CardFooter className="flex flex-col lg:flex-row lg:justify-between items-start border-t border-white/[0.1]">
           <div className="flex gap-1 sm:gap-4">
             {project.website && (
               <ProjectCTA href={project.website}>
@@ -244,7 +243,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
               </ProjectCTA>
             )}
           </div>
-          <div className="flex items-center gap-1 sm:gap-2 text-sm">
+          <div className="flex items-center gap-1 sm:gap-2 text-sm self-end">
             <div
               className="relative"
               onMouseEnter={() => setHoveredVoteType("FOR")}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import Container from "@/components/Container";
 import { Navbar } from "@/components/Navbar";
@@ -10,15 +10,10 @@ import { Spinner } from "@/components/Spinner";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Disclaimer } from "@/components/Disclaimer";
+import { ParticlesBackground } from "@/components/ParticlesBackground";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -105,13 +100,13 @@ export default function RootLayout({
       >
         <Providers>
           <body
-            className={`
-          ${geistSans.variable} ${geistMono.variable}
-          font-sans antialiased
+            className={`relative
+          ${dmSans.variable} antialiased
         `}
           >
             <Disclaimer />
             <div className="fixed z-[-1] inset-0 min-h-screen w-screen bg-gradient pointer-events-none" />
+            <ParticlesBackground />
             <Navbar />
             <Container>{children}</Container>
             <ToastContainer
