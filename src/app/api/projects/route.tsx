@@ -25,6 +25,7 @@ export interface IProject {
   votes_against: number;
   votes_breakdown?: Array<TVoteBreakdown>;
   nads_verified: boolean;
+  nads_verified_at?: Date | null;
   created_by?: {
     username: string;
     avatar: string;

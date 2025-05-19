@@ -44,7 +44,7 @@ export const VotesBreakdown: React.FC<IVotesBreakdownProps> = ({
       >
         <h3
           className={cn(
-            "flex items-center gap-1 text-lg font-semibold",
+            "flex items-center gap-1 text-lg font-semibold whitespace-nowrap",
             type === "FOR" ? "text-emerald-400/60" : "text-red-400/60",
             type === "BOTH" && "text-white"
           )}

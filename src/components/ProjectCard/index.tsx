@@ -95,14 +95,21 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
       return res.json();
     },
     onSuccess: (data) => {
-      toast.success("Vote submitted successfully!");
-      const { project_id } = data.vote;
-      const { votesFor, votesAgainst } = data.stats;
+      const { message, stats } = data;
+
+      if (message === "Vote removed successfully") {
+        toast.info("Your vote has been removed.");
+      } else if (message === "Vote updated successfully") {
+        toast.success("Your vote has been updated.");
+      } else if (message === "Vote recorded successfully") {
+        toast.success("Your vote has been recorded.");
+      }
+
+      const { votesFor, votesAgainst } = stats;
       const queries = queryClient
         .getQueryCache()
         .findAll({ queryKey: ["projects"] });
 
-      // Update each query's cache
       queries.forEach(({ queryKey }) => {
         queryClient.setQueryData(
           queryKey,
@@ -120,14 +127,14 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
               ...oldData,
               pages: oldData.pages.map((page) => ({
                 ...page,
-                projects: page.projects.map((project) =>
-                  project.id === project_id
+                projects: page.projects.map((p) =>
+                  p.id === project.id
                     ? {
-                        ...project,
+                        ...p,
                         votes_for: votesFor,
                         votes_against: votesAgainst,
                       }
-                    : project
+                    : p
                 ),
               })),
             };
@@ -204,8 +211,8 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
                 {project.name}
               </CardTitle>
               {/* TODO: Integrate with nads_verified_at */}
-              {project.nads_verified && (
-                <NadsVerifiedPopover date={new Date(Date.now())} />
+              {project.nads_verified && project.nads_verified_at && (
+                <NadsVerifiedPopover date={project.nads_verified_at} />
               )}
             </div>
             {project.categories && (

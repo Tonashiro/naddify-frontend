@@ -19,7 +19,7 @@ export const NadsVerifiedPopover: React.FC<INadsVerifiedPopoverProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const formattedDate = date.toLocaleDateString("en-US", {
+const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
   });
