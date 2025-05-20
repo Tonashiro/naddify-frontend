@@ -76,8 +76,6 @@ export const Navbar: React.FC = () => {
         </div>
 
         <ul className="hidden md:flex items-center space-x-6">
-          <NavItem href="/" label="Home" />
-          <NavItem href="/about" label="About" />
           {user?.is_admin && (
             <NavItem href="/projects/add" label="Add Project" />
           )}

@@ -3,13 +3,9 @@ import React from "react";
 
 interface IUserInfoCard {
   totalVotes: number;
-  points: number;
 }
 
-export const UserInfoCard: React.FC<IUserInfoCard> = ({
-  totalVotes,
-  points,
-}) => {
+export const UserInfoCard: React.FC<IUserInfoCard> = ({ totalVotes }) => {
   return (
     <div className="flex flex-col sm:flex-row justify-center gap-10 items-center bg-gradient-to-b from-purple-900 to-gray-900 p-6 rounded-lg shadow-md max-w-xl">
       {/* Total Votes Section */}
@@ -29,7 +25,7 @@ export const UserInfoCard: React.FC<IUserInfoCard> = ({
         <Stars className="w-14 h-14 text-purple-400" />
         <div className="flex flex-col">
           <h3 className="text-lg font-semibold">Earned Points</h3>
-          <p className="text-2xl font-bold">{points}</p>
+          <p className="text-2xl font-bold">-</p>
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ export const ProfilePage: React.FC<IProfilePage> = ({ statsData }) => {
   return (
     <div className="flex flex-col mt-[64px] pt-[5%] max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 gap-10">
       <UserProfile user={user} />
-      <UserInfoCard points={0} totalVotes={statsData.totalVotes} />
+      <UserInfoCard totalVotes={statsData.totalVotes} />
       <Leaderboard />
     </div>
   );
