@@ -36,9 +36,15 @@ interface IUserContext {
 
 const UserContext = createContext<IUserContext | undefined>(undefined);
 
-export const UserContextProvider = ({ children }: { children: ReactNode }) => {
+export const UserContextProvider = ({
+  children,
+  initialUser,
+}: {
+  children: ReactNode;
+  initialUser?: IUser | null; // Accept initial user data
+}) => {
   const router = useRouter();
-  const [user, setUser] = useState<IUser | null>(null);
+  const [user, setUser] = useState<IUser | null>(initialUser || null); // Use initialUser if provided
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -76,6 +82,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Failed to fetch user");
       }
     },
+    enabled: !initialUser, // Only fetch if initialUser is not provided
     refetchOnWindowFocus: true,
     retry: 1,
   });

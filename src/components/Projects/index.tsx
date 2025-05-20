@@ -1,8 +1,9 @@
 import { IProject } from "@/app/api/projects/route";
 import { ProjectCard } from "@/components/ProjectCard";
 
-interface Props {
+interface IProjects {
   projects: IProject[];
+  revalidateData: () => Promise<void>;
 }
 
 /**
@@ -44,11 +45,15 @@ interface Props {
  * @param props.projects - An array of project objects to display.
  * @returns A JSX element representing the grid of project cards.
  */
-export const Projects = ({ projects }: Props) => {
+export const Projects = ({ projects, revalidateData }: IProjects) => {
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 mb-[5%]">
       {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} />
+        <ProjectCard
+          key={project.id}
+          project={project}
+          revalidateData={revalidateData}
+        />
       ))}
     </section>
   );

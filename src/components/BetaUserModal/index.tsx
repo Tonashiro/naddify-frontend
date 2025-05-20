@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -24,19 +24,28 @@ import { IUser, useUserContext } from "@/contexts/userContext";
 import { toast } from "react-toastify";
 import { Spinner } from "@/components/Spinner";
 import { isAddress } from "viem";
+import Image from "next/image";
 
 interface IFormValues {
   wallet_address: string;
 }
 
-export const BetaUserModal: React.FC = () => {
+interface IBetaUserModal {
+  isModalOpen?: boolean;
+  setIsModalOpen?: Dispatch<SetStateAction<boolean>>;
+}
+
+export const BetaUserModal: React.FC<IBetaUserModal> = ({
+  isModalOpen,
+  setIsModalOpen,
+}) => {
   const { user, setUser } = useUserContext();
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   const form = useForm<IFormValues>({
     defaultValues: {
-      wallet_address: "",
+      wallet_address: user?.wallet_address ?? "",
     },
   });
 
@@ -63,6 +72,10 @@ export const BetaUserModal: React.FC = () => {
       toast.success("Wallet address submitted successfully!");
       setIsOpen(false);
       setIsPending(false);
+
+      if (setIsModalOpen) {
+        setIsModalOpen(false);
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message || "An unexpected error occurred");
@@ -73,21 +86,34 @@ export const BetaUserModal: React.FC = () => {
   };
 
   const handleOpenChange = (open: boolean) => {
-    if (open && user?.wallet_address) {
+    if (open && user?.wallet_address && isModalOpen === undefined) {
       toast.info(
         "You already submitted your wallet address. If you want to change it, head to your profile and click on 'Change Wallet Address'."
       );
       return;
     }
-    setIsOpen(open);
+
+    if (setIsModalOpen) {
+      setIsModalOpen(open);
+    } else {
+      setIsOpen(open);
+    }
   };
 
+  const isModalOpenState = isModalOpen ?? isOpen;
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isModalOpenState} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <button className="px-3 py-2 rounded-full text-white bg-purple-600 hover:bg-purple-700 transition-all cursor-pointer font-semibold text-md">
-          BETA
-        </button>
+        {isModalOpen === undefined && setIsModalOpen === undefined ? (
+          <Image
+            src="/images/beta_user.webp"
+            alt="Beta user badge"
+            width={80}
+            height={100}
+            className="cursor-pointer hover:scale-105 transition-transform duration-300"
+          />
+        ) : null}
       </DialogTrigger>
       <DialogContent>
         {isPending && (

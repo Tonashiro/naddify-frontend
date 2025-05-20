@@ -22,7 +22,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("Error fetching user data:", err);
+    console.error("Error fetching categories data:", err);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }

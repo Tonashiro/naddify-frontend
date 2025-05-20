@@ -11,6 +11,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Disclaimer } from "@/components/Disclaimer";
 import { ParticlesBackground } from "@/components/ParticlesBackground";
+import { cookies } from "next/headers";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -82,11 +83,32 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch user data on the server side
+  const cookieStorage = await cookies();
+  const token = cookieStorage.get("token")?.value;
+
+  let user = null;
+
+  if (token) {
+    const userResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (userResponse.ok) {
+      user = await userResponse.json();
+    }
+  }
   return (
     <html lang="en" suppressHydrationWarning>
       <SpeedInsights />
@@ -98,7 +120,7 @@ export default function RootLayout({
           </body>
         }
       >
-        <Providers>
+        <Providers initialUser={user}>
           <body
             className={`relative
           ${dmSans.variable} antialiased

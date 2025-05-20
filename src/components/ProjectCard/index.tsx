@@ -25,11 +25,11 @@ import { useRouter } from "next/navigation";
 import { VotesBreakdown } from "@/components/VotesBreakdown";
 import { NadsVerifiedPopover } from "@/components/NadsVerifiedPopover";
 import { TVoteType } from "@/app/api/votes/[projectId]/route";
-import { IStats } from "@/app/api/stats/route";
 
 export interface IProjectCard {
   project: IProject;
   isPreview?: boolean;
+  revalidateData: () => Promise<void>;
 }
 
 /**
@@ -61,7 +61,11 @@ export interface IProjectCard {
  * @param props - The props for the `ProjectCard` component.
  * @returns A JSX element representing the project card.
  */
-export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
+export const ProjectCard: React.FC<IProjectCard> = ({
+  project,
+  isPreview,
+  revalidateData,
+}) => {
   const [pendingVote, setPendingVote] = useState<"FOR" | "AGAINST" | null>(
     null
   );
@@ -69,9 +73,9 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
     "FOR" | "AGAINST" | "BOTH" | null
   >(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const queryClient = useQueryClient();
   const { user, connectDiscord } = useUserContext();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: async (voteType: "FOR" | "AGAINST") => {
@@ -93,18 +97,12 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
         throw new Error(error.message ?? "Voting failed");
       }
 
+      await revalidateData();
+
       return res.json();
     },
     onSuccess: (data) => {
       const { message, stats } = data;
-
-      if (message === "Vote removed successfully") {
-        toast.info("Your vote has been removed.");
-      } else if (message === "Vote updated successfully") {
-        toast.success("Your vote has been updated.");
-      } else if (message === "Vote recorded successfully") {
-        toast.success("Your vote has been recorded.");
-      }
 
       const { votesFor, votesAgainst } = stats;
       const queries = queryClient
@@ -143,23 +141,13 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
         );
       });
 
-      // Update the stats query cache
-      queryClient.setQueryData<IStats>(["stats"], (oldStats) => {
-        if (!oldStats) return oldStats;
-
-        // Update the totalVotes count
-        const updatedTotalVotes =
-          message === "Vote removed successfully"
-            ? oldStats.totalVotes - 1
-            : oldStats.totalVotes + 1;
-
-        return {
-          ...oldStats,
-          totalVotes: updatedTotalVotes,
-        };
-      });
-
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      if (message === "Vote removed successfully") {
+        toast.info("Your vote has been removed.");
+      } else if (message === "Vote updated successfully") {
+        toast.success("Your vote has been updated.");
+      } else if (message === "Vote recorded successfully") {
+        toast.success("Your vote has been recorded.");
+      }
     },
     onError: (error) => {
       console.error("Error during mutation:", error);

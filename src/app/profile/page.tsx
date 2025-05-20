@@ -1,46 +1,46 @@
-"use client";
-
+import { IVotesStatsResponse } from "@/app/api/votes/me/route";
+import { ProfilePage } from "@/components/ProfilePage";
 import { Spinner } from "@/components/Spinner";
-import { BETA_CUTOFF_DATE } from "@/constants";
-import { useUserContext } from "@/contexts/userContext";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-export default function Profile() {
-  const { user, isLoading } = useUserContext();
-  const router = useRouter();
+export default async function Profile() {
+  const cookieStorage = await cookies();
+  const token = cookieStorage.get("token")?.value;
 
-  const isBetaUser =
-    user?.created_at && new Date(user.created_at) < BETA_CUTOFF_DATE;
+  if (!token) {
+    console.error("Unauthorized: No token found");
+    redirect("/");
+  }
 
-  if (!user && !isLoading) router.push("/");
+  // Fetch votes stats
+  const statsResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/votes/me`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      next: { revalidate: 60 },
+    }
+  );
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner />
-      </div>
-    );
+  if (!statsResponse.ok) {
+    throw new Error("Failed to fetch votes stats");
+  }
+
+  const statsData: IVotesStatsResponse = await statsResponse.json();
 
   return (
-    <div className="flex flex-col my-[5%]">
-      <div className="flex gap-4">
-        <Image
-          src={`https://cdn.discordapp.com/avatars/${user?.discord_id}/${user?.avatar}.png`}
-          alt="User Avatar"
-          width={100}
-          height={100}
-          className="rounded-full pointer-events-none"
-        />
-        <div className="flex flex-col gap-4">
-          <h1 className="text-2xl font-bold mt-4 capitalize">
-            {user?.username}
-          </h1>
-          {isBetaUser && (
-            <h2 className="text-lg font-semibold text-white">BETA USER</h2>
-          )}
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center h-screen">
+          <Spinner />
         </div>
-      </div>
-    </div>
+      }
+    >
+      <ProfilePage statsData={statsData} />
+    </Suspense>
   );
 }

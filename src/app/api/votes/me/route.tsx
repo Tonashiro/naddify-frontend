@@ -1,6 +1,19 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { IUser } from "@/contexts/userContext";
+import { TVoteType } from "@/app/api/votes/[projectId]/route";
+
+export type TProjectVote = {
+  id: string;
+  projectId: string;
+  projectName: string;
+  voteType: TVoteType;
+  createdAt: string;
+};
+
+export interface IVotesStatsResponse {
+  votes: TProjectVote;
+  totalVotes: number;
+}
 
 export async function GET() {
   try {
@@ -12,7 +25,7 @@ export async function GET() {
     }
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/votes/me`,
       {
         method: "GET",
         headers: {
@@ -24,15 +37,14 @@ export async function GET() {
 
     if (!res.ok) {
       const error = await res.json();
-
       return NextResponse.json(error, { status: res.status });
     }
 
-    const data: IUser = await res.json();
+    const data: IVotesStatsResponse = await res.json();
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("Error fetching user data:", err);
+    console.error("Error voting:", err);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }

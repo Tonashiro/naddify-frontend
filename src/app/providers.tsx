@@ -2,12 +2,13 @@
 
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { UserContextProvider } from "@/contexts/userContext";
+import { IUser, UserContextProvider } from "@/contexts/userContext";
 
 const queryClient = new QueryClient();
 
 interface ProvidersProps {
   children: React.ReactNode;
+  initialUser?: IUser | null; // Allow passing initialUser for SSR
 }
 
 /**
@@ -23,10 +24,15 @@ interface ProvidersProps {
  * </Providers>
  * ```
  */
-export const Providers: React.FC<ProvidersProps> = ({ children }) => {
+export const Providers: React.FC<ProvidersProps> = ({
+  children,
+  initialUser,
+}) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <UserContextProvider>{children}</UserContextProvider>
+      <UserContextProvider initialUser={initialUser}>
+        {children}
+      </UserContextProvider>
     </QueryClientProvider>
   );
 };
