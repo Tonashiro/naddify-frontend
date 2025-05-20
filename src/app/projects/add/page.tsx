@@ -175,6 +175,7 @@ export default function AddProject() {
         {/* Live Preview */}
         <div className="max-w-sm">
           <ProjectCard
+            revalidateData={async () => {}}
             project={{
               id: "preview",
               status: "PENDING",
