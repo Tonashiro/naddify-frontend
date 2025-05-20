@@ -21,7 +21,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "Naddify",
-  description: "A community-driven platform for project curation on Monad",
+  description: "A Platform for community-led project discovery on Monad",
   keywords: [
     "Naddify",
     "Monad projects",
@@ -52,15 +52,15 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Naddify",
-    description: "A community-driven platform for project curation on Monad",
+    description: "A Platform for community-led project discovery on Monad",
     url: "https://www.naddify.xyz",
     siteName: "Naddify",
     images: [
       {
-        url: "https://www.naddify.xyz/twitter_card.png",
+        url: "https://www.naddify.xyz/open_graph.png",
         width: 1200,
         height: 630,
-        alt: "Naddify- A community-driven platform for project curation on Monad",
+        alt: "Naddify- A Platform for community-led project discovery on Monad",
       },
     ],
     locale: "en_US",
@@ -71,13 +71,13 @@ export const metadata: Metadata = {
     site: "@naddify_xyz",
     creator: "@naddify_xyz",
     title: "Naddify",
-    description: "A community-driven platform for project curation on Monad",
+    description: "A Platform for community-led project discovery on Monad",
     images: [
       {
-        url: "https://www.naddify.xyz/twitter_card.png",
+        url: "https://www.naddify.xyz/open_graph.png",
         width: 1200,
         height: 630,
-        alt: "Naddify - A community-driven platform for project curation on Monad",
+        alt: "Naddify - A Platform for community-led project discovery on Monad",
       },
     ],
   },
