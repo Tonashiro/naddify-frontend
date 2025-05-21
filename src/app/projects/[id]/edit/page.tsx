@@ -3,11 +3,11 @@ import { EditProjectPage } from "@/components/EditProjectPage";
 import { Suspense } from "react";
 import { Spinner } from "@/components/Spinner";
 
-export default async function EditProject({
-  params,
-}: {
-  params: { id: string };
-}) {
+interface EditProjectProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditProject({ params }: EditProjectProps) {
   const { id } = await params;
 
   // Fetch project data

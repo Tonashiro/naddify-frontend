@@ -191,10 +191,10 @@ export default function AddProject() {
                   "Category Name",
               })),
               logo_url: formValues.logo_url
-                ? URL.createObjectURL(formValues.logo_url)
+                ? URL.createObjectURL(formValues.logo_url as File)
                 : "/images/monad.webp",
               banner_url: formValues.banner_url
-                ? URL.createObjectURL(formValues.banner_url)
+                ? URL.createObjectURL(formValues.banner_url as File)
                 : null,
               votes_for: 0,
               votes_against: 0,
