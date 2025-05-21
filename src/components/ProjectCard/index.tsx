@@ -175,7 +175,8 @@ export const ProjectCard: React.FC<IProjectCard> = ({
             <Image
               src={project.banner_url}
               height={150}
-              width={280}
+              width={485}
+              quality={100}
               alt={`${project.name} banner`}
               className="w-full h-[150px] max-h-[150px] z-[-1] rounded-t-xl bg-purple-500"
             />
@@ -183,19 +184,19 @@ export const ProjectCard: React.FC<IProjectCard> = ({
         </div>
 
         {!isPreview && user?.is_admin && (
-          <div className="absolute top-4 right-4 z-20">
+          <div className="flex gap-2 absolute top-4 right-4 z-20">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 router.push(`/projects/${project.id}/edit`);
               }}
-              className="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200 text-white cursor-pointer"
+              className="p-2 rounded-full bg-gray-700 hover:opacity-80 transition-colors duration-200 text-white cursor-pointer"
             >
               <Pencil size={20} />
             </button>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className="p-2 rounded-full hover:bg-red-700 transition-colors duration-200 text-white cursor-pointer"
+              className="p-2 rounded-full bg-red-700 hover:opacity-80 transition-colors duration-200 text-white cursor-pointer"
             >
               <Trash2 size={20} />
             </button>
@@ -208,7 +209,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
             alt={`${project.name} logo`}
             height={56}
             width={56}
-            className="rounded-full max-w-[56px] max-h-[56px]"
+            className="rounded-full max-w-[56px] max-h-[56px] outline-2 outline-black shadow-md"
           />
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
