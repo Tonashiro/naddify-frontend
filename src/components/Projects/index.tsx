@@ -1,8 +1,9 @@
 import { IProject } from "@/app/api/projects/route";
+import { TVoteType } from "@/app/api/votes/[projectId]/route";
 import { ProjectCard } from "@/components/ProjectCard";
 
 interface IProjects {
-  projects: IProject[];
+  projects: Array<IProject & { voteType?: TVoteType }>;
   revalidateData: () => Promise<void>;
 }
 

@@ -27,7 +27,7 @@ import { NadsVerifiedPopover } from "@/components/NadsVerifiedPopover";
 import { TVoteType } from "@/app/api/votes/[projectId]/route";
 
 export interface IProjectCard {
-  project: IProject;
+  project: IProject & { voteType?: TVoteType };
   isPreview?: boolean;
   revalidateData: () => Promise<void>;
 }
@@ -271,6 +271,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
                 }}
                 isPending={pendingVote === "FOR"}
                 disabled={pendingVote === "AGAINST"}
+                alreadyVoted={project?.voteType}
               >
                 {project.votes_for}
               </VoteButton>
@@ -296,6 +297,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
                 }}
                 isPending={pendingVote === "AGAINST"}
                 disabled={pendingVote === "FOR"}
+                alreadyVoted={project?.voteType}
               >
                 {project.votes_against}
               </VoteButton>

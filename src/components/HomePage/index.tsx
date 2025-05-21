@@ -3,6 +3,7 @@
 import { ICategory } from "@/app/api/categories/route";
 import { IProject } from "@/app/api/projects/route";
 import { IStats } from "@/app/api/stats/route";
+import { TVoteType } from "@/app/api/votes/[projectId]/route";
 import { Hero } from "@/components/Hero";
 import { ProjectFilter } from "@/components/ProjectFilter";
 import { Projects } from "@/components/Projects";
@@ -12,11 +13,25 @@ import { PROJECTS_AMOUNT_LIMIT } from "@/constants";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+type TProjectVote = {
+  id: string;
+  projectId: string;
+  projectName: string;
+  voteType: TVoteType;
+  createdAt: Date;
+};
+
+interface IUserVotes {
+  totalVotes: number;
+  votes: Array<TProjectVote>;
+}
+
 interface IHomePage {
   revalidateData: () => Promise<void>;
   categories: ICategory[];
   stats: IStats;
   initialProjects: IProject[];
+  userVotes: IUserVotes;
 }
 
 export const HomePage: React.FC<IHomePage> = ({
@@ -24,6 +39,7 @@ export const HomePage: React.FC<IHomePage> = ({
   categories,
   stats,
   initialProjects,
+  userVotes,
 }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -91,10 +107,19 @@ export const HomePage: React.FC<IHomePage> = ({
     };
   }, [fetchNextPageCallback]);
 
+  // Map user votes to projects
   const allProjects =
     data?.pages
       .flatMap((page) => page.projects)
-      .filter((project) => project.status !== "SCAM") ?? [];
+      .map((project) => {
+        const userVote = userVotes.votes.find(
+          (vote) => vote.projectId === project.id
+        );
+        return {
+          ...project,
+          voteType: userVote?.voteType ?? undefined,
+        };
+      }) ?? [];
 
   return (
     <div className="min-h-screen flex flex-col mx-auto w-full px-[5%] max-w-[1920px] text-text-primary">

@@ -2,6 +2,7 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { TVoteType } from "@/app/api/votes/[projectId]/route";
 
 // Define button variants for "for" and "against"
 const voteButtonVariants = cva(
@@ -55,6 +56,7 @@ const AgainstIcon: React.FC = () => (
 
 interface IVoteButton extends React.ComponentProps<"button"> {
   isPending: boolean;
+  alreadyVoted?: TVoteType;
 }
 
 /**
@@ -67,11 +69,16 @@ function VoteButton({
   variant,
   children,
   isPending,
+  alreadyVoted,
   ...props
 }: IVoteButton & VariantProps<typeof voteButtonVariants>) {
   return (
     <button
-      className={cn(voteButtonVariants({ variant, className }))}
+      className={cn(
+        voteButtonVariants({ variant, className }),
+        alreadyVoted === "FOR" && variant === "for" && "bg-emerald-500/20",
+        alreadyVoted === "AGAINST" && variant === "against" && "bg-red-500/20"
+      )}
       {...props}
     >
       {isPending ? (
