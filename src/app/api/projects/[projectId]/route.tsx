@@ -16,10 +16,6 @@ export async function PUT(req: NextRequest) {
     }: { project: IProject & { category: string }; projectId: string } =
       await req.json();
 
-    const mappedBody = {
-      ...project,
-      categories: [project.category],
-    };
 
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${projectId}`,
@@ -29,7 +25,7 @@ export async function PUT(req: NextRequest) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(mappedBody),
+        body: JSON.stringify(project),
       }
     );
 

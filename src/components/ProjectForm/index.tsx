@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as z from "zod";
@@ -14,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { IProject } from "@/app/api/projects/route";
 import { ICategory } from "@/app/api/categories/route";
 import { projectSchema } from "@/components/ProjectForm/schema";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -28,17 +29,17 @@ const isFieldRequired = (fieldName: string): boolean => {
 };
 
 export type TProjectForm = z.infer<typeof projectSchema> & {
-  logo_url: File | null;
-  banner_url: File | null;
+  logo_url: string | File | null;
+  banner_url: string | File | null;
 };
 
 interface IProjectForm {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<TProjectForm, any, TProjectForm>;
   categoryOptions: ICategory[];
-  project?: IProject;
   onSubmit: (values: TProjectForm) => void;
   formId: string;
+  project?: IProject;
 }
 
 export const ProjectForm: React.FC<IProjectForm> = ({
@@ -46,11 +47,28 @@ export const ProjectForm: React.FC<IProjectForm> = ({
   onSubmit,
   categoryOptions,
   formId,
+  project,
 }) => {
   const { setValue, control } = form;
 
   const [logoError, setLogoError] = useState<string | null>(null);
   const [bannerError, setBannerError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (project) {
+      // Set default values for editing
+      form.reset({
+        name: project.name,
+        description: project.description,
+        website: project.website ?? undefined,
+        twitter: project.twitter ?? undefined,
+        discord: project.discord ?? undefined,
+        categories: project.categories.map((c) => c.id),
+        logo_url: project.logo_url as any,
+        banner_url: project.banner_url as any,
+      });
+    }
+  }, [project, form]);
 
   const onDropLogo = useCallback(
     (acceptedFiles: File[]) => {

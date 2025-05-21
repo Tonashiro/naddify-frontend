@@ -11,26 +11,22 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
-    const projectLogo = formData.get("projectLogo") as File;
-    const projectBanner = formData.get("projectBanner") as File | null;
+    const projectLogo = formData.get("projectLogo");
+    const projectBanner = formData.get("projectBanner");
 
-    if (!projectLogo) {
-      return NextResponse.json(
-        { message: "Logo is required" },
-        { status: 400 }
+    // Prepare FormData for files to upload
+    const combinedFormData = new FormData();
+
+    if (projectLogo instanceof File) {
+      const logoBuffer = Buffer.from(await projectLogo.arrayBuffer());
+      combinedFormData.append(
+        "projectLogo",
+        new Blob([logoBuffer]),
+        `logo-${Date.now()}-${projectLogo.name}`
       );
     }
 
-    // Prepare FormData for both files
-    const combinedFormData = new FormData();
-    const logoBuffer = Buffer.from(await projectLogo.arrayBuffer());
-    combinedFormData.append(
-      "projectLogo",
-      new Blob([logoBuffer]),
-      `logo-${Date.now()}-${projectLogo.name}`
-    );
-
-    if (projectBanner) {
+    if (projectBanner instanceof File) {
       const bannerBuffer = Buffer.from(await projectBanner.arrayBuffer());
       combinedFormData.append(
         "projectBanner",
@@ -39,7 +35,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Make a single request to upload both files
+    // If no files are provided, return an error
+    if (
+      !combinedFormData.has("projectLogo") &&
+      !combinedFormData.has("projectBanner")
+    ) {
+      return NextResponse.json(
+        { message: "No files provided for upload" },
+        { status: 400 }
+      );
+    }
+
+    // Make a single request to upload the files
     const backendRes = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/upload`,
       {

@@ -30,9 +30,30 @@ export const projectSchema = z.object({
     .min(1, "At least one category is required")
     .max(3, "You can select up to 3 categories"),
   logo_url: z
-    .instanceof(File, { message: "Logo is required" })
-    .refine((file) => file.size <= 1 * 1024 * 1024, {
-      message: "Logo must be less than 1MB",
-    }),
-  banner_url: z.instanceof(File).nullable(),
+    .union([
+      z.instanceof(File, { message: "Logo must be a file" }),
+      z.string(), // Allow existing logo URLs
+    ])
+    .refine(
+      (value) =>
+        typeof value === "string" ||
+        (value instanceof File && value.size <= 1 * 1024 * 1024),
+      {
+        message: "Logo must be less than 1MB",
+      }
+    ),
+  banner_url: z
+    .union([
+      z.instanceof(File, { message: "Banner must be a file" }),
+      z.string().nullable(), // Allow existing banner URLs or null
+    ])
+    .refine(
+      (value) =>
+        value === null ||
+        typeof value === "string" ||
+        (value instanceof File && value.size <= 2 * 1024 * 1024),
+      {
+        message: "Banner must be less than 2MB",
+      }
+    ),
 });
