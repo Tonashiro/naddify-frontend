@@ -60,7 +60,7 @@ export const UserProfile: React.FC<IUserProfile> = ({ user }) => {
             <span className="text-white pointer-events-none">
               {user?.wallet_address
                 ? "Change your wallet"
-                : "Connect your wallet"}
+                : "Submit your wallet"}
             </span>
           </div>
         </div>

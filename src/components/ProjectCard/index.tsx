@@ -102,7 +102,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
       return res.json();
     },
     onSuccess: (data) => {
-      const { message, stats } = data;
+      const { message, stats, votesBreakdown } = data;
 
       const { votesFor, votesAgainst } = stats;
       const queries = queryClient
@@ -132,6 +132,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
                         ...p,
                         votes_for: votesFor,
                         votes_against: votesAgainst,
+                        votes_breakdown: votesBreakdown,
                       }
                     : p
                 ),
