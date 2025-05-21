@@ -41,12 +41,9 @@ export const UserProfile: React.FC<IUserProfile> = ({ user }) => {
             {user?.username}
           </h1>
           {isBetaUser && (
-            <Image
-              src="/images/beta_user.webp"
-              alt="Beta user badge"
-              width={80}
-              height={100}
-            />
+            <button className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-bold py-2 px-4 rounded-lg w-fit">
+              BETA
+            </button>
           )}
           <div
             className="flex items-center justify-center p-2 text-white gap-2 bg-purple-600 rounded-sm mt-4 cursor-pointer hover:bg-purple-700 hover:scale-[1.01] transition duration-300"

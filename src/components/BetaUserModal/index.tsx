@@ -24,7 +24,6 @@ import { IUser, useUserContext } from "@/contexts/userContext";
 import { toast } from "react-toastify";
 import { Spinner } from "@/components/Spinner";
 import { isAddress } from "viem";
-import Image from "next/image";
 
 interface IFormValues {
   wallet_address: string;
@@ -106,13 +105,9 @@ export const BetaUserModal: React.FC<IBetaUserModal> = ({
     <Dialog open={isModalOpenState} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isModalOpen === undefined && setIsModalOpen === undefined ? (
-          <Image
-            src="/images/beta_user.webp"
-            alt="Beta user badge"
-            width={80}
-            height={100}
-            className="cursor-pointer hover:scale-105 transition-transform duration-300"
-          />
+          <button className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-bold py-2 px-4 rounded-lg cursor-pointer hover:scale-105 transition-transform duration-300">
+            BETA
+          </button>
         ) : null}
       </DialogTrigger>
       <DialogContent>
