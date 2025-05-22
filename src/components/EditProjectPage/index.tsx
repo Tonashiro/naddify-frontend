@@ -142,7 +142,6 @@ export const EditProjectPage: React.FC<IEditProjectPageProps> = ({
         {/* Live Preview */}
         <div className="max-w-sm">
           <ProjectCard
-            revalidateData={async () => {}}
             project={{
               id: project.id,
               status: "PENDING",

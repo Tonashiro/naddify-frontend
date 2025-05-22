@@ -1,7 +1,6 @@
 import { HomePage } from "@/components/HomePage";
 import { Spinner } from "@/components/Spinner";
 import { PROJECTS_AMOUNT_LIMIT } from "@/constants";
-import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
@@ -9,27 +8,20 @@ export default async function Home() {
   const cookieStorage = await cookies();
   const token = cookieStorage.get("token")?.value;
 
-  const revalidateData = async () => {
-    "use server";
-
-    revalidateTag("stats");
-    revalidateTag("projects");
-    revalidateTag("votes");
-  };
-
   // Fetch categories, stats, and projects in parallel
-  const [categoriesResponse, statsResponse, projectsResponse] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/categories`, {
-      next: { revalidate: 60 },
-    }),
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`),
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`,
-      {
-        next: { revalidate: 60, tags: ["projects"] },
-      }
-    ),
-  ]);
+  const [categoriesResponse, statsResponse, projectsResponse] =
+    await Promise.all([
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/categories`),
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`, {
+        next: { revalidate: 1 },
+      }),
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`,
+        {
+          next: { revalidate: 1, tags: ["projects"] },
+        }
+      ),
+    ]);
 
   if (!categoriesResponse.ok) {
     throw new Error("Failed to fetch categories");
@@ -79,7 +71,6 @@ export default async function Home() {
       }
     >
       <HomePage
-        revalidateData={revalidateData}
         categories={categories}
         stats={stats}
         initialProjects={projectsData}

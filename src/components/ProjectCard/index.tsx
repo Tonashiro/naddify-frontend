@@ -29,7 +29,6 @@ import { TVoteType } from "@/app/api/votes/[projectId]/route";
 export interface IProjectCard {
   project: IProject & { voteType?: TVoteType };
   isPreview?: boolean;
-  revalidateData: () => Promise<void>;
 }
 
 /**
@@ -61,13 +60,10 @@ export interface IProjectCard {
  * @param props - The props for the `ProjectCard` component.
  * @returns A JSX element representing the project card.
  */
-export const ProjectCard: React.FC<IProjectCard> = ({
-  project,
-  isPreview,
-  revalidateData,
-}) => {
-  const [pendingVote, setPendingVote] = useState<"FOR" | "AGAINST" | null>(
-    null
+export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
+  const [pendingVote, setPendingVote] = useState<TVoteType>();
+  const [alreadyVoted, setAlreadyVoted] = useState<TVoteType | undefined>(
+    project.voteType
   );
   const [hoveredVoteType, setHoveredVoteType] = useState<
     "FOR" | "AGAINST" | "BOTH" | null
@@ -96,8 +92,6 @@ export const ProjectCard: React.FC<IProjectCard> = ({
         const error = await res.json();
         throw new Error(error.message ?? "Voting failed");
       }
-
-      await revalidateData();
 
       return res.json();
     },
@@ -133,6 +127,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
                         votes_for: votesFor,
                         votes_against: votesAgainst,
                         votes_breakdown: votesBreakdown,
+                        voteType: pendingVote,
                       }
                     : p
                 ),
@@ -142,12 +137,18 @@ export const ProjectCard: React.FC<IProjectCard> = ({
         );
       });
 
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
+
       if (message === "Vote removed successfully") {
+        setAlreadyVoted(undefined);
         toast.info("Your vote has been removed.");
-      } else if (message === "Vote updated successfully") {
-        toast.success("Your vote has been updated.");
-      } else if (message === "Vote recorded successfully") {
-        toast.success("Your vote has been recorded.");
+      } else {
+        setAlreadyVoted(pendingVote);
+        if (message === "Vote updated successfully") {
+          toast.success("Your vote has been updated.");
+        } else if (message === "Vote recorded successfully") {
+          toast.success("Your vote has been recorded.");
+        }
       }
     },
     onError: (error) => {
@@ -155,7 +156,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
       toast.error(error.message ?? "Voting failed");
     },
     onSettled: () => {
-      setPendingVote(null);
+      setPendingVote(undefined);
     },
   });
 
@@ -271,7 +272,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
                 }}
                 isPending={pendingVote === "FOR"}
                 disabled={pendingVote === "AGAINST"}
-                alreadyVoted={project?.voteType}
+                alreadyVoted={alreadyVoted}
               >
                 {project.votes_for}
               </VoteButton>
@@ -297,7 +298,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({
                 }}
                 isPending={pendingVote === "AGAINST"}
                 disabled={pendingVote === "FOR"}
-                alreadyVoted={project?.voteType}
+                alreadyVoted={alreadyVoted}
               >
                 {project.votes_against}
               </VoteButton>

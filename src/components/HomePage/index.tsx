@@ -10,7 +10,7 @@ import { Projects } from "@/components/Projects";
 import { Spinner } from "@/components/Spinner";
 import { StatsSection } from "@/components/StatsSection";
 import { PROJECTS_AMOUNT_LIMIT } from "@/constants";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type TProjectVote = {
@@ -27,7 +27,6 @@ interface IUserVotes {
 }
 
 interface IHomePage {
-  revalidateData: () => Promise<void>;
   categories: ICategory[];
   stats: IStats;
   initialProjects: IProject[];
@@ -35,7 +34,6 @@ interface IHomePage {
 }
 
 export const HomePage: React.FC<IHomePage> = ({
-  revalidateData,
   categories,
   stats,
   initialProjects,
@@ -88,6 +86,29 @@ export const HomePage: React.FC<IHomePage> = ({
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  // Fetch stats using React Query
+  const { data: statsData } = useQuery({
+    queryKey: ["stats"],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`,
+        {
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch stats");
+      }
+
+      return res.json();
+    },
+    initialData: stats,
+    refetchOnWindowFocus: "always",
+    refetchInterval: 60 * 1000,
+    retry: 1,
+  });
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -125,7 +146,7 @@ export const HomePage: React.FC<IHomePage> = ({
     <div className="min-h-screen flex flex-col mx-auto w-full px-[5%] max-w-[1920px] text-text-primary">
       <Hero />
 
-      <StatsSection stats={stats} />
+      <StatsSection stats={statsData} />
 
       <div className="relative flex flex-col gap-6">
         <ProjectFilter
@@ -135,7 +156,7 @@ export const HomePage: React.FC<IHomePage> = ({
         />
 
         <div className="flex-1">
-          <Projects projects={allProjects} revalidateData={revalidateData} />
+          <Projects projects={allProjects} />
           <div
             ref={loadMoreRef}
             className="h-12 flex justify-center items-center"
