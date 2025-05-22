@@ -112,7 +112,7 @@ export const HomePage: React.FC<IHomePage> = ({
     data?.pages
       .flatMap((page) => page.projects)
       .map((project) => {
-        const userVote = userVotes.votes.find(
+        const userVote = userVotes?.votes?.find(
           (vote) => vote.projectId === project.id
         );
         return {

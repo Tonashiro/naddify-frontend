@@ -10,11 +10,13 @@ interface EditProjectProps {
 export default async function EditProject({ params }: EditProjectProps) {
   const { id } = await params;
 
-  // Fetch project data
-  const projectResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${id}`
-  );
+  // Fetch project data and categories in parallel
+  const [projectResponse, categoryResponse] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/${id}`),
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/categories`),
+  ]);
 
+  // Handle errors for project data
   if (!projectResponse.ok) {
     if (projectResponse.status === 404) {
       notFound();
@@ -22,13 +24,11 @@ export default async function EditProject({ params }: EditProjectProps) {
     throw new Error("Failed to fetch project data");
   }
 
-  const projectData = await projectResponse.json();
-
-  // Fetch categories
-  const categoryResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/categories`
-  );
-  const categoryOptions = await categoryResponse.json();
+  // Parse JSON responses
+  const [projectData, categoryOptions] = await Promise.all([
+    projectResponse.json(),
+    categoryResponse.json(),
+  ]);
 
   return (
     <Suspense
