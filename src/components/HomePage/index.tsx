@@ -90,12 +90,9 @@ export const HomePage: React.FC<IHomePage> = ({
   const { data: statsData } = useQuery({
     queryKey: ["stats"],
     queryFn: async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`,
-        {
-          credentials: "include",
-        }
-      );
+      const res = await fetch("/api/stats", {
+        credentials: "include",
+      });
 
       if (!res.ok) {
         throw new Error("Failed to fetch stats");
