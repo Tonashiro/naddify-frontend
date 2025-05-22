@@ -16,10 +16,7 @@ export default async function Home() {
         next: { revalidate: 1 },
       }),
       fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`,
-        {
-          next: { revalidate: 1, tags: ["projects"] },
-        }
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`
       ),
     ]);
 
@@ -49,7 +46,6 @@ export default async function Home() {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-            next: { revalidate: 60, tags: ["votes"] },
           }
         );
 
