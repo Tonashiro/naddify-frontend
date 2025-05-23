@@ -59,7 +59,6 @@ export async function GET(req: NextRequest) {
     });
 
     const res = await fetch(url.toString());
-
     if (!res.ok) {
       const error = await res.json();
       return NextResponse.json(error, { status: res.status });

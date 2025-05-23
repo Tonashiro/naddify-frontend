@@ -56,9 +56,7 @@ export const HomePage: React.FC<IHomePage> = ({
         url.searchParams.set("limit", PROJECTS_AMOUNT_LIMIT.toString());
         if (categoryParam) url.searchParams.set("category", categoryParam);
 
-        const res = await fetch(url.toString(), {
-          credentials: "include",
-        });
+        const res = await fetch(url.toString(), { credentials: "include" });
 
         if (!res.ok) {
           throw new Error("Failed to fetch projects");
@@ -72,7 +70,7 @@ export const HomePage: React.FC<IHomePage> = ({
           : undefined;
       },
       initialData: {
-        pages: [initialProjects], // Use the SSR-fetched projects as the initial data
+        pages: [initialProjects],
         pageParams: [1],
       },
       refetchOnWindowFocus: "always",
@@ -114,7 +112,7 @@ export const HomePage: React.FC<IHomePage> = ({
           fetchNextPageCallback();
         }
       },
-      { threshold: 1 }
+      { threshold: 0.25 }
     );
 
     const currentRef = loadMoreRef.current;
@@ -156,7 +154,7 @@ export const HomePage: React.FC<IHomePage> = ({
           <Projects projects={allProjects} />
           <div
             ref={loadMoreRef}
-            className="h-12 flex justify-center items-center"
+            className="min-h-20 w-fit mx-auto flex justify-center items-center"
           >
             {(isFetchingNextPage || isLoading) && <Spinner />}
           </div>
