@@ -11,6 +11,7 @@ import { Spinner } from "@/components/Spinner";
 import { StatsSection } from "@/components/StatsSection";
 import { PROJECTS_AMOUNT_LIMIT } from "@/constants";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { AlertCircle } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type TProjectVote = {
@@ -144,11 +145,18 @@ export const HomePage: React.FC<IHomePage> = ({
       <StatsSection stats={statsData} />
 
       <div className="relative flex flex-col gap-6">
-        <ProjectFilter
-          selectedCategories={selectedCategories}
-          setSelectedCategories={setSelectedCategories}
-          categories={categories}
-        />
+        <div className="flex flex-col lg:flex-row gap-4 justify-between items-end">
+          <h3 className="flex items-center gap-2 text-sm lg:text-nowrap text-gray-300">
+            <AlertCircle />
+            Disclaimer: Project sorting only considers MON, NAD, and OG votes.
+            Full Access votes are not included
+          </h3>
+          <ProjectFilter
+            selectedCategories={selectedCategories}
+            setSelectedCategories={setSelectedCategories}
+            categories={categories}
+          />
+        </div>
 
         <div className="flex-1">
           <Projects projects={allProjects} />
