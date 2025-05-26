@@ -1,8 +1,9 @@
 "use client";
 
 import { BetaUserModal } from "@/components/BetaUserModal";
+import { Skeleton } from "@/components/ui/skeleton";
 import { BETA_CUTOFF_DATE } from "@/constants";
-import { IUser } from "@/contexts/userContext";
+import { IUser, useUserContext } from "@/contexts/userContext";
 import { Wallet } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,7 +13,8 @@ export interface IUserProfile {
   user: IUser | null;
 }
 
-export const UserProfile: React.FC<IUserProfile> = ({ user }) => {
+export const UserProfile: React.FC<IUserProfile> = () => {
+  const { user, isLoading } = useUserContext();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -29,13 +31,18 @@ export const UserProfile: React.FC<IUserProfile> = ({ user }) => {
       />
 
       <div className="flex gap-4">
-        <Image
-          src={`https://cdn.discordapp.com/avatars/${user?.discord_id}/${user?.avatar}.png`}
-          alt="User Avatar"
-          width={100}
-          height={100}
-          className="rounded-full pointer-events-none max-h-[100px] max-w-[100px]"
-        />
+        {isLoading || !user ? (
+          <Skeleton className="w-24 h-24 rounded-full" />
+        ) : (
+          <Image
+            src={`https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`}
+            alt="User Avatar"
+            width={100}
+            height={100}
+            className="rounded-full pointer-events-none max-h-[100px] max-w-[100px]"
+          />
+        )}
+
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold mt-4 capitalize">
             {user?.username}
