@@ -48,7 +48,7 @@ export const Hero: React.FC = () => {
         </p>
       </div>
 
-      {user?.is_admin && <AddProjectCard />}
+      {user?.is_admin ? <AddProjectCard /> : <AddProjectCard type="submit" />}
     </section>
   );
 };
