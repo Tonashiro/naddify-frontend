@@ -28,6 +28,13 @@ export const VotesBreakdown: React.FC<IVotesBreakdownProps> = ({
 }) => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
+  const roleMapper: Record<string, string> = {
+    MON: "mon",
+    OG: "nad-OG",
+    NAD: "nads",
+    FULL_ACCESS: "full access",
+  };
+
   if (!votesBreakdown || votesBreakdown.length === 0) return null;
 
   return (
@@ -92,7 +99,7 @@ export const VotesBreakdown: React.FC<IVotesBreakdownProps> = ({
                       className={cn("text-sm font-medium")}
                       style={{ color: colorMapping[vote.role] }}
                     >
-                      {vote.role}
+                      {roleMapper[vote.role]}
                     </span>
                   </div>
                   <span
