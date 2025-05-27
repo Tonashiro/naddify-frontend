@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { BetaUserModal } from "@/components/BetaUserModal";
@@ -5,7 +6,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BETA_CUTOFF_DATE } from "@/constants";
 import { IUser, useUserContext } from "@/contexts/userContext";
 import { Wallet } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -34,7 +34,7 @@ export const UserProfile: React.FC<IUserProfile> = () => {
         {isLoading || !user ? (
           <Skeleton className="w-24 h-24 rounded-full" />
         ) : (
-          <Image
+          <img
             src={`https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`}
             alt="User Avatar"
             width={100}

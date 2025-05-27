@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -53,7 +53,7 @@ export const UserMenu: React.FC = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Image
+        <img
           src={`https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`}
           alt="User Avatar"
           width={40}
