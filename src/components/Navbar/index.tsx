@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { UserMenu } from "@/components/UserMenu";
 import { useUserContext } from "@/contexts/userContext";
@@ -66,7 +66,7 @@ export const Navbar: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="group flex items-center cursor-pointer hover:scale-110 transition-transform duration-300">
           <Link href="/">
-            <Image
+            <img
               src="/images/naddify.webp"
               alt="Naddify Logo"
               width={50}

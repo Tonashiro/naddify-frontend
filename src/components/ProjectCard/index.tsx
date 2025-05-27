@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState } from "react";
@@ -9,7 +10,6 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import Image from "next/image";
 import { Website } from "@/components/Icons/Website";
 import { Discord } from "@/components/Icons/Discord";
 import { Twitter } from "@/components/Icons/Twitter";
@@ -174,11 +174,10 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
       <Card id={project.id} key={project.id} className="relative min-h-[280px]">
         <div className="absolute top-0 left-0 inset-0 w-full h-[150px] rounded-t-xl bg-purple-600/50">
           {project.banner_url && (
-            <Image
+            <img
               src={project.banner_url}
               height={150}
               width={485}
-              quality={100}
               alt={`${project.name} banner`}
               className="w-full h-[150px] max-h-[150px] z-[-1] rounded-t-xl bg-purple-500"
             />
@@ -206,7 +205,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
         )}
 
         <CardHeader className="pt-[93px] flex flex-col z-10">
-          <Image
+          <img
             src={project.logo_url ?? "/images/monad.webp"}
             alt={`${project.name} logo`}
             height={56}
