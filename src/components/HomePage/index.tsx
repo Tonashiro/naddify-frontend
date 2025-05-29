@@ -5,6 +5,7 @@ import { IProject } from "@/app/api/projects/route";
 import { IStats } from "@/app/api/stats/route";
 import { TVoteType } from "@/app/api/votes/[projectId]/route";
 import { Hero } from "@/components/Hero";
+import { Switch } from "@/components/ui/switch";
 import { ProjectFilter } from "@/components/ProjectFilter";
 import { Projects } from "@/components/Projects";
 import { Spinner } from "@/components/Spinner";
@@ -41,13 +42,12 @@ export const HomePage: React.FC<IHomePage> = ({
   userVotes,
 }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [showOnlyNew, setShowOnlyNew] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
-  const queryKey = ["projects", selectedCategories];
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey,
+      queryKey: ["projects", selectedCategories, showOnlyNew],
       initialPageParam: 1,
       queryFn: async ({ pageParam = 1 }) => {
         const categoryParam = selectedCategories.join(",");
@@ -56,6 +56,7 @@ export const HomePage: React.FC<IHomePage> = ({
         url.searchParams.set("page", pageParam.toString());
         url.searchParams.set("limit", PROJECTS_AMOUNT_LIMIT.toString());
         if (categoryParam) url.searchParams.set("category", categoryParam);
+        if (showOnlyNew) url.searchParams.set("onlyNew", "true");
 
         const res = await fetch(url.toString(), { credentials: "include" });
 
@@ -151,11 +152,22 @@ export const HomePage: React.FC<IHomePage> = ({
             Disclaimer: Project sorting only considers MON, NAD, and OG votes.
             Full Access votes are not included
           </h3>
-          <ProjectFilter
-            selectedCategories={selectedCategories}
-            setSelectedCategories={setSelectedCategories}
-            categories={categories}
-          />
+          <div className="flex gap-4 items-end">
+            <div className="flex items-center gap-2 w-full sm:text-nowrap">
+              <span className="text-sm text-gray-300">
+                Show only new projects
+              </span>
+              <Switch
+                checked={showOnlyNew}
+                onCheckedChange={(checked) => setShowOnlyNew(checked)}
+              />
+            </div>
+            <ProjectFilter
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+              categories={categories}
+            />
+          </div>
         </div>
 
         <div className="flex-1">

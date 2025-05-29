@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { VotesBreakdown } from "@/components/VotesBreakdown";
 import { NadsVerifiedPopover } from "@/components/NadsVerifiedPopover";
 import { TVoteType } from "@/app/api/votes/[projectId]/route";
+import { cn, isNew } from "@/lib/utils";
 
 export interface IProjectCard {
   project: IProject & { voteType?: TVoteType };
@@ -171,7 +172,15 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
 
   return (
     <>
-      <Card id={project.id} key={project.id} className="relative min-h-[280px]">
+      <Card
+        id={project.id}
+        key={project.id}
+        className={cn(
+          "relative min-h-[280px] transition-shadow duration-300",
+          isNew(project.created_at) &&
+            "border-3 border-purple-500 shadow-[0_0_10px_2px_rgba(128,90,213,0.5)]"
+        )}
+      >
         <div className="absolute top-0 left-0 inset-0 w-full h-[150px] rounded-t-xl bg-purple-600/50">
           {project.banner_url && (
             <img
