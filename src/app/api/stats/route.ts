@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import mockStats from '../../../../mock_db/stats.json';
+//import mockStats from '../../../../mock_db/stats.json'
 
 export interface IStats {
   uniqueVoters: number;
@@ -10,9 +10,9 @@ export interface IStats {
 export async function GET() {
   try {
     // Use mock data in development
-    if (process.env.NODE_ENV === 'development') {
-      return NextResponse.json(mockStats);
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //   return NextResponse.json(mockStats)
+    // }
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`);
 
