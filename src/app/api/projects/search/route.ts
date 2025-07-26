@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import mockProjects from '../../../../../mock_db/projects.json'
-import { IProject } from '../route'
+//import mockProjects from '../../../../../mock_db/projects.json'
+//import { IProject } from '../route'
 
 export async function GET(req: NextRequest) {
   try {
@@ -11,18 +11,18 @@ export async function GET(req: NextRequest) {
     }
 
     // Use mock data in development
-    if (process.env.NODE_ENV === 'development') {
-      const searchResults = (mockProjects.projects as IProject[]).filter(
-        (project) =>
-          project.name.toLowerCase().includes(searchQuery) ||
-          project.description.toLowerCase().includes(searchQuery) ||
-          project.categories.some((cat) =>
-            cat.name.toLowerCase().includes(searchQuery),
-          ),
-      )
+    // if (process.env.NODE_ENV === 'development') {
+    //   const searchResults = (mockProjects.projects as IProject[]).filter(
+    //     (project) =>
+    //       project.name.toLowerCase().includes(searchQuery) ||
+    //       project.description.toLowerCase().includes(searchQuery) ||
+    //       project.categories.some((cat) =>
+    //         cat.name.toLowerCase().includes(searchQuery),
+    //       ),
+    //   )
 
-      return NextResponse.json({ projects: searchResults })
-    }
+    //   return NextResponse.json({ projects: searchResults })
+    // }
 
     // Production: Forward to backend API
     const url = new URL(
