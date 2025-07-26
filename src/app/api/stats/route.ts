@@ -1,31 +1,33 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
+import mockStats from '../../../../mock_db/stats.json'
 
 export interface IStats {
-  uniqueVoters: number;
-  totalVotes: number;
-  totalProjects: number;
+  uniqueVoters: number
+  totalVotes: number
+  totalProjects: number
 }
 
 export async function GET() {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`
-    );
-
-    if (!res.ok) {
-      const error = await res.json();
-
-      return NextResponse.json(error, { status: res.status });
+    // Use mock data in development
+    if (process.env.NODE_ENV === 'development') {
+      return NextResponse.json(mockStats)
     }
 
-    const data: IStats = await res.json();
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`)
 
-    return NextResponse.json(data);
+    if (!res.ok) {
+      const error = await res.json()
+      return NextResponse.json(error, { status: res.status })
+    }
+
+    const data: IStats = await res.json()
+    return NextResponse.json(data)
   } catch (err) {
-    console.error("Error while retrieving stats:", err);
+    console.error('Error while retrieving stats:', err)
     return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+      { message: 'Internal Server Error' },
+      { status: 500 },
+    )
   }
 }

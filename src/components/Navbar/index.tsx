@@ -1,11 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
+'use client'
 
-import React from "react";
-import Link from "next/link";
-import { UserMenu } from "@/components/UserMenu";
-import { useUserContext } from "@/contexts/userContext";
-import { BetaUserModal } from "@/components/BetaUserModal";
+import React from 'react'
+import Link from 'next/link'
+import { UserMenu } from '@/components/UserMenu'
+import { useUserContext } from '@/contexts/userContext'
+import { BetaUserModal } from '@/components/BetaUserModal'
 
 /**
  * A reusable navigation item component with hover effects.
@@ -35,8 +35,8 @@ export const NavItem: React.FC<{ href: string; label: string }> = ({
       </Link>
       <span className="absolute left-0 bottom-[-3px] h-[2px] w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
     </li>
-  );
-};
+  )
+}
 
 /**
  * The `Navbar` component renders a fixed navigation bar at the top of the page.
@@ -59,11 +59,11 @@ export const NavItem: React.FC<{ href: string; label: string }> = ({
  * @returns A JSX element representing the navigation bar.
  */
 export const Navbar: React.FC = () => {
-  const { user } = useUserContext();
+  const { user } = useUserContext()
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-gray-900/80 backdrop-blur-md border-b border-gray-800 z-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-16 flex items-center justify-between h-16">
         <div className="group flex items-center cursor-pointer hover:scale-110 transition-transform duration-300">
           <Link href="/">
             <img
@@ -87,5 +87,5 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}

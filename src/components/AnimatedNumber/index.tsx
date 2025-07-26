@@ -1,7 +1,7 @@
-import { useSpring, animated } from "react-spring";
+import { useSpring, animated } from 'react-spring'
 
 interface IAnimatedNumber {
-  total: number;
+  total: number
 }
 
 export const AnimatedNumber: React.FC<IAnimatedNumber> = ({ total }) => {
@@ -9,11 +9,11 @@ export const AnimatedNumber: React.FC<IAnimatedNumber> = ({ total }) => {
     from: { number: 0 },
     to: { number: total },
     config: { duration: 1000, tension: 20, friction: 10 },
-  });
+  })
 
   return (
-    <animated.span className="text-3xl font-bold text-white">
+    <animated.span className="text-[56px] sm:text-[64px] font-bold text-white">
       {number.to((n) => n.toFixed(0))}
     </animated.span>
-  );
-};
+  )
+}

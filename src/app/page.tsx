@@ -1,12 +1,12 @@
-import { HomePage } from "@/components/HomePage";
-import { Spinner } from "@/components/Spinner";
-import { PROJECTS_AMOUNT_LIMIT } from "@/constants";
-import { cookies } from "next/headers";
-import { Suspense } from "react";
+import { HomePage } from '@/components/HomePage'
+import { Spinner } from '@/components/Spinner'
+import { PROJECTS_AMOUNT_LIMIT } from '@/constants'
+import { cookies } from 'next/headers'
+import { Suspense } from 'react'
 
 export default async function Home() {
-  const cookieStorage = await cookies();
-  const token = cookieStorage.get("token")?.value;
+  const cookieStorage = await cookies()
+  const token = cookieStorage.get('token')?.value
 
   // Fetch categories, stats, and projects in parallel
   const [categoriesResponse, statsResponse, projectsResponse] =
@@ -16,25 +16,25 @@ export default async function Home() {
         next: { revalidate: 1 },
       }),
       fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`,
       ),
-    ]);
+    ])
 
   if (!categoriesResponse.ok) {
-    throw new Error("Failed to fetch categories");
+    throw new Error('Failed to fetch categories')
   }
   if (!statsResponse.ok) {
-    throw new Error("Failed to fetch stats");
+    throw new Error('Failed to fetch stats')
   }
   if (!projectsResponse.ok) {
-    throw new Error("Failed to fetch projects");
+    throw new Error('Failed to fetch projects')
   }
 
   const [categories, stats, projectsData] = await Promise.all([
     categoriesResponse.json(),
     statsResponse.json(),
     projectsResponse.json(),
-  ]);
+  ])
 
   // Fetch user votes only if a token is available
   const userVotes = token
@@ -44,19 +44,19 @@ export default async function Home() {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
-          }
-        );
+          },
+        )
 
         if (!userVotesResponse.ok) {
-          console.error("Failed to fetch user votes");
-          return null; // Return null if the request fails
+          console.error('Failed to fetch user votes')
+          return null // Return null if the request fails
         }
 
-        return userVotesResponse.json();
+        return userVotesResponse.json()
       })()
-    : null; // Return null if no token is available
+    : null // Return null if no token is available
 
   return (
     <Suspense
@@ -73,5 +73,5 @@ export default async function Home() {
         userVotes={userVotes}
       />
     </Suspense>
-  );
+  )
 }
