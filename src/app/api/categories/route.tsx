@@ -18,7 +18,14 @@ export async function GET() {
 
     const data: ICategory[] = await res.json();
 
-    return NextResponse.json(data);
+    // Dummy Devnads category to the frontend
+    const devnadsCategory: ICategory = {
+      id: 'devnads-temp-id',
+      name: 'Devnads',
+      description: 'Developer NADs Projects',
+    };
+
+    return NextResponse.json([...data, devnadsCategory]);
   } catch (err) {
     console.error('Error fetching categories data:', err);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });

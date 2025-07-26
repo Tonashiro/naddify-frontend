@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import mockProjects from '../../../../mock_db/projects.json';
 
 export type TProjectStatus = 'PENDING' | 'TRUSTABLE' | 'SCAM' | 'RUG';
 export type TDiscordRoles = 'MON' | 'OG' | 'NAD' | 'FULL_ACCESS';
@@ -51,6 +52,45 @@ export interface IPaginatedProjects {
 
 export async function GET(req: NextRequest) {
   try {
+    // Use mock data in development
+    if (process.env.NODE_ENV === 'development') {
+      const queryParams = req.nextUrl.searchParams;
+      const page = parseInt(queryParams.get('page') || '1');
+      const limit = parseInt(queryParams.get('limit') || '20');
+      const category = queryParams.get('category');
+      const onlyNew = queryParams.get('onlyNew') === 'true';
+
+      let filteredProjects = mockProjects.projects as IProject[];
+      if (category) {
+        const categories = category.split(',');
+        filteredProjects = filteredProjects.filter((project) =>
+          project.categories.some((cat) => categories.includes(cat.id))
+        );
+      }
+
+      if (onlyNew) {
+        const now = new Date();
+        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        filteredProjects = filteredProjects.filter(
+          (project: IProject) => new Date(project.created_at!) > oneWeekAgo
+        );
+      }
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedProjects = filteredProjects.slice(startIndex, endIndex);
+
+      return NextResponse.json({
+        projects: paginatedProjects,
+        pagination: {
+          total: filteredProjects.length,
+          page,
+          limit,
+          pages: Math.ceil(filteredProjects.length / limit),
+        },
+      });
+    }
+
     const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`);
     const queryParams = req.nextUrl.searchParams;
 

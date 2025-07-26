@@ -1,9 +1,11 @@
 import { IProject } from '@/app/api/projects/route';
 import { TVoteType } from '@/app/api/votes/[projectId]/route';
 import { ProjectCard } from '@/components/ProjectCard';
+import { ProjectCardSkeleton } from '@/components/ProjectCardSkeleton';
 
 interface IProjects {
   projects: Array<IProject & { voteType?: TVoteType }>;
+  isLoading?: boolean;
 }
 
 /**
@@ -22,6 +24,7 @@ interface IProjects {
  *
  * ### Props:
  * - `projects` (`IProject[]`): An array of project objects to display.
+ * - `isLoading` (`boolean`): Whether the projects are currently loading.
  *
  * ### Styling:
  * - Uses Tailwind CSS for styling.
@@ -42,12 +45,21 @@ interface IProjects {
  * ```
  *
  * @param props - The props for the `Projects` component.
- * @param props.projects - An array of project objects to display.
  * @returns A JSX element representing the grid of project cards.
  */
-export const Projects = ({ projects }: IProjects) => {
+export const Projects = ({ projects, isLoading }: IProjects) => {
+  if (isLoading) {
+    return (
+      <section className="min-h-[200px] grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 mb-[5%]">
+        {[...Array(2)].map((_, i) => (
+          <ProjectCardSkeleton key={i} />
+        ))}
+      </section>
+    );
+  }
+
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 mb-[5%]">
+    <section className="min-h-[200px] grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 mb-[5%]">
       {projects.map((project) => (
         <ProjectCard key={project.id} project={project} />
       ))}
