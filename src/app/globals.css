@@ -144,6 +144,45 @@ html body[data-scroll-locked] {
   line-height: normal;
 }
 
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Team image hover effect */
+.team-image {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.team-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(52, 211, 153, 0.1),
+    rgba(52, 211, 153, 0.05)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 4px;
+}
+
+.team-image:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(52, 211, 153, 0.15);
+}
+
+.team-image:hover::after {
+  opacity: 1;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
