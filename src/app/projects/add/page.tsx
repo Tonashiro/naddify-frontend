@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ProjectForm, TProjectForm } from "@/components/ProjectForm";
-import { ProjectCard } from "@/components/ProjectCard";
-import { projectSchema } from "@/components/ProjectForm/schema";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ICategory } from "@/app/api/categories/route";
-import { toast } from "react-toastify";
-import { IPagination, IProject } from "@/app/api/projects/route";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ProjectForm, TProjectForm } from '@/components/ProjectForm';
+import { ProjectCard } from '@/components/ProjectCard';
+import { projectSchema } from '@/components/ProjectForm/schema';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ICategory } from '@/app/api/categories/route';
+import { toast } from 'react-toastify';
+import { IPagination, IProject } from '@/app/api/projects/route';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 export default function AddProject() {
   const router = useRouter();
   const { data: categoryOptions = [], isLoading } = useQuery<ICategory[]>({
-    queryKey: ["categories"],
+    queryKey: ['categories'],
     queryFn: async () => {
-      const res = await fetch("/api/categories");
+      const res = await fetch('/api/categories');
       if (!res.ok) {
-        throw new Error("Failed to fetch categories");
+        throw new Error('Failed to fetch categories');
       }
       return res.json();
     },
@@ -28,11 +28,11 @@ export default function AddProject() {
   const form = useForm<TProjectForm>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      website: "",
-      twitter: "",
-      discord: "",
+      name: '',
+      description: '',
+      website: '',
+      twitter: '',
+      discord: '',
       categories: [],
       logo_url: undefined,
       banner_url: null,
@@ -43,27 +43,24 @@ export default function AddProject() {
 
   const queryClient = useQueryClient();
 
-  const { mutateAsync: uploadImages, isPending: isUploadingImages } =
-    useMutation({
-      mutationFn: async (formData: FormData) => {
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+  const { mutateAsync: uploadImages, isPending: isUploadingImages } = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
 
-        if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.message ?? "Upload failed");
-        }
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message ?? 'Upload failed');
+      }
 
-        return res.json() as Promise<{ logoUrl: string; bannerUrl?: string }>;
-      },
-    });
+      return res.json() as Promise<{ logoUrl: string; bannerUrl?: string }>;
+    },
+  });
 
   const { mutate: addProject, isPending } = useMutation({
-    mutationFn: async (
-      values: TProjectForm & { logoUrl: string; bannerUrl?: string }
-    ) => {
+    mutationFn: async (values: TProjectForm & { logoUrl: string; bannerUrl?: string }) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { logoUrl, bannerUrl, ...restValues } = values;
 
@@ -73,25 +70,23 @@ export default function AddProject() {
         banner_url: values.bannerUrl,
       };
 
-      const res = await fetch("/api/projects", {
-        method: "POST",
+      const res = await fetch('/api/projects', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.message ?? "Failed to add project");
+        throw new Error(error.message ?? 'Failed to add project');
       }
 
       return res.json();
     },
     onSuccess: (newProject) => {
-      const queries = queryClient
-        .getQueryCache()
-        .findAll({ queryKey: ["projects"] });
+      const queries = queryClient.getQueryCache().findAll({ queryKey: ['projects'] });
 
       queries.forEach(({ queryKey }) => {
         queryClient.setQueryData(
@@ -102,7 +97,7 @@ export default function AddProject() {
                   pages: { projects: IProject[]; pagination: IPagination }[];
                   pageParams: Array<number>;
                 }
-              | undefined
+              | undefined,
           ) => {
             if (!oldData) return;
 
@@ -110,22 +105,21 @@ export default function AddProject() {
               ...oldData,
               pages: oldData.pages.map((page, index) => ({
                 ...page,
-                projects:
-                  index === 0 ? [newProject, ...page.projects] : page.projects,
+                projects: index === 0 ? [newProject, ...page.projects] : page.projects,
               })),
             };
-          }
+          },
         );
       });
 
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
 
-      toast.success("Project added successfully!");
+      toast.success('Project added successfully!');
 
       router.push(`/`);
     },
     onError: (error) => {
-      toast.error(error.message || "Something went wrong!");
+      toast.error(error.message || 'Something went wrong!');
     },
   });
 
@@ -134,18 +128,18 @@ export default function AddProject() {
       const formData = new FormData();
 
       if (values.logo_url) {
-        formData.append("projectLogo", values.logo_url);
+        formData.append('projectLogo', values.logo_url);
       }
 
       if (values.banner_url) {
-        formData.append("projectBanner", values.banner_url);
+        formData.append('projectBanner', values.banner_url);
       }
 
       const { logoUrl, bannerUrl } = await uploadImages(formData);
 
       addProject({ ...values, logoUrl, bannerUrl });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      const errorMessage = err instanceof Error ? err.message : 'Upload failed';
       toast.error(errorMessage);
     }
   };
@@ -176,22 +170,20 @@ export default function AddProject() {
         <div className="max-w-sm">
           <ProjectCard
             project={{
-              id: "preview",
-              status: "PENDING",
-              name: formValues.name || "Project Name",
-              description: formValues.description || "Project Description",
-              website: formValues.website || "",
-              twitter: formValues.twitter || "",
-              discord: formValues.discord || "",
+              id: 'preview',
+              status: 'PENDING',
+              name: formValues.name || 'Project Name',
+              description: formValues.description || 'Project Description',
+              website: formValues.website || '',
+              twitter: formValues.twitter || '',
+              discord: formValues.discord || '',
               categories: formValues.categories.map((categoryId) => ({
                 id: categoryId,
-                name:
-                  categoryOptions.find((opt) => opt.id === categoryId)?.name ||
-                  "Category Name",
+                name: categoryOptions.find((opt) => opt.id === categoryId)?.name || 'Category Name',
               })),
               logo_url: formValues.logo_url
                 ? URL.createObjectURL(formValues.logo_url as File)
-                : "/images/monad.webp",
+                : '/images/monad.webp',
               banner_url: formValues.banner_url
                 ? URL.createObjectURL(formValues.banner_url as File)
                 : null,
@@ -213,7 +205,7 @@ export default function AddProject() {
           {isUploadingImages || isPending ? (
             <div className="animate-spin rounded-full h-6 w-6 border-t-4 border-purple-500 border-solid" />
           ) : (
-            "Add Project"
+            'Add Project'
           )}
         </Button>
       </div>

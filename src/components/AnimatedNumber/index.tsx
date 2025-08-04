@@ -1,4 +1,4 @@
-import { useSpring, animated } from "react-spring";
+import { useSpring, animated } from 'react-spring';
 
 interface IAnimatedNumber {
   total: number;

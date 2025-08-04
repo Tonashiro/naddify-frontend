@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
-export type TVoteType = "FOR" | "AGAINST";
+export type TVoteType = 'FOR' | 'AGAINST';
 
 export interface IVote {
   id: string;
@@ -26,34 +26,27 @@ export interface IVoteResponse {
 
 export async function POST(req: NextRequest) {
   try {
-    const { voteType, projectId }: { voteType: TVoteType; projectId: string } =
-      await req.json();
+    const { voteType, projectId }: { voteType: TVoteType; projectId: string } = await req.json();
 
-    if (!voteType || !["FOR", "AGAINST"].includes(voteType)) {
-      return NextResponse.json(
-        { message: "Invalid vote type" },
-        { status: 400 }
-      );
+    if (!voteType || !['FOR', 'AGAINST'].includes(voteType)) {
+      return NextResponse.json({ message: 'Invalid vote type' }, { status: 400 });
     }
 
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const token = cookieStore.get('token')?.value;
 
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/votes/${projectId}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ voteType }),
-      }
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/votes/${projectId}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ voteType }),
+    });
 
     if (!res.ok) {
       const error = await res.json();
@@ -64,10 +57,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("Error voting:", err);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error('Error voting:', err);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -1,8 +1,8 @@
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
-export type TProjectStatus = "PENDING" | "TRUSTABLE" | "SCAM" | "RUG";
-export type TDiscordRoles = "MON" | "OG" | "NAD" | "FULL_ACCESS";
+export type TProjectStatus = 'PENDING' | 'TRUSTABLE' | 'SCAM' | 'RUG';
+export type TDiscordRoles = 'MON' | 'OG' | 'NAD' | 'FULL_ACCESS';
 
 export type TVoteBreakdown = {
   role: TDiscordRoles;
@@ -68,36 +68,30 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("Error fetching projects:", err);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error('Error fetching projects:', err);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const token = cookieStore.get('token')?.value;
 
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await req.json();
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      }
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
 
     if (!res.ok) {
       const error = await res.json();
@@ -109,11 +103,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("Error creating project:", err);
+    console.error('Error creating project:', err);
 
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -9,23 +9,23 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Website } from "@/components/Icons/Website";
-import { Discord } from "@/components/Icons/Discord";
-import { Twitter } from "@/components/Icons/Twitter";
-import ProjectCTA from "@/components/ProjectCTA";
-import { VoteButton } from "@/components/VoteButton";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import { IPagination, IProject } from "@/app/api/projects/route";
-import { useUserContext } from "@/contexts/userContext";
-import { InfoIcon, Pencil, Trash2 } from "lucide-react";
-import { DeleteProjectModal } from "@/components/DeleteProjectModal";
-import { useRouter } from "next/navigation";
-import { VotesBreakdown } from "@/components/VotesBreakdown";
-import { NadsVerifiedPopover } from "@/components/NadsVerifiedPopover";
-import { TVoteType } from "@/app/api/votes/[projectId]/route";
-import { cn, isNew } from "@/lib/utils";
+} from '@/components/ui/card';
+import { Website } from '@/components/Icons/Website';
+import { Discord } from '@/components/Icons/Discord';
+import { Twitter } from '@/components/Icons/Twitter';
+import ProjectCTA from '@/components/ProjectCTA';
+import { VoteButton } from '@/components/VoteButton';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { IPagination, IProject } from '@/app/api/projects/route';
+import { useUserContext } from '@/contexts/userContext';
+import { InfoIcon, Pencil, Trash2 } from 'lucide-react';
+import { DeleteProjectModal } from '@/components/DeleteProjectModal';
+import { useRouter } from 'next/navigation';
+import { VotesBreakdown } from '@/components/VotesBreakdown';
+import { NadsVerifiedPopover } from '@/components/NadsVerifiedPopover';
+import { TVoteType } from '@/app/api/votes/[projectId]/route';
+import { cn, isNew } from '@/lib/utils';
 
 export interface IProjectCard {
   project: IProject & { voteType?: TVoteType };
@@ -63,19 +63,15 @@ export interface IProjectCard {
  */
 export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
   const [pendingVote, setPendingVote] = useState<TVoteType>();
-  const [alreadyVoted, setAlreadyVoted] = useState<TVoteType | undefined>(
-    project.voteType
-  );
-  const [hoveredVoteType, setHoveredVoteType] = useState<
-    "FOR" | "AGAINST" | "BOTH" | null
-  >(null);
+  const [alreadyVoted, setAlreadyVoted] = useState<TVoteType | undefined>(project.voteType);
+  const [hoveredVoteType, setHoveredVoteType] = useState<'FOR' | 'AGAINST' | 'BOTH' | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { user, connectDiscord } = useUserContext();
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
-    mutationFn: async (voteType: "FOR" | "AGAINST") => {
+    mutationFn: async (voteType: 'FOR' | 'AGAINST') => {
       if (!user) {
         connectDiscord();
         return;
@@ -83,15 +79,15 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
 
       setPendingVote(voteType);
       const res = await fetch(`/api/votes/${project.id}`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ voteType, projectId: project.id }),
       });
 
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.message ?? "Voting failed");
+        throw new Error(error.message ?? 'Voting failed');
       }
 
       return res.json();
@@ -100,9 +96,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
       const { message, stats, votesBreakdown } = data;
 
       const { votesFor, votesAgainst } = stats;
-      const queries = queryClient
-        .getQueryCache()
-        .findAll({ queryKey: ["projects"] });
+      const queries = queryClient.getQueryCache().findAll({ queryKey: ['projects'] });
 
       queries.forEach(({ queryKey }) => {
         queryClient.setQueryData(
@@ -113,7 +107,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
                   pages: { projects: IProject[]; pagination: IPagination }[];
                   pageParams: Array<number>;
                 }
-              | undefined
+              | undefined,
           ) => {
             if (!oldData) return;
 
@@ -130,31 +124,31 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
                         votes_breakdown: votesBreakdown,
                         voteType: pendingVote,
                       }
-                    : p
+                    : p,
                 ),
               })),
             };
-          }
+          },
         );
       });
 
-      queryClient.invalidateQueries({ queryKey: ["stats"] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
 
-      if (message === "Vote removed successfully") {
+      if (message === 'Vote removed successfully') {
         setAlreadyVoted(undefined);
-        toast.info("Your vote has been removed.");
+        toast.info('Your vote has been removed.');
       } else {
         setAlreadyVoted(pendingVote);
-        if (message === "Vote updated successfully") {
-          toast.success("Your vote has been updated.");
-        } else if (message === "Vote recorded successfully") {
-          toast.success("Your vote has been recorded.");
+        if (message === 'Vote updated successfully') {
+          toast.success('Your vote has been updated.');
+        } else if (message === 'Vote recorded successfully') {
+          toast.success('Your vote has been recorded.');
         }
       }
     },
     onError: (error) => {
-      console.error("Error during mutation:", error);
-      toast.error(error.message ?? "Voting failed");
+      console.error('Error during mutation:', error);
+      toast.error(error.message ?? 'Voting failed');
     },
     onSettled: () => {
       setPendingVote(undefined);
@@ -176,9 +170,9 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
         id={project.id}
         key={project.id}
         className={cn(
-          "relative min-h-[280px] transition-shadow duration-300",
+          'relative min-h-[280px] transition-shadow duration-300',
           isNew(project.created_at) &&
-            "border-3 border-purple-500 shadow-[0_0_10px_2px_rgba(128,90,213,0.5)]"
+            'border-3 border-purple-500 shadow-[0_0_10px_2px_rgba(128,90,213,0.5)]',
         )}
       >
         <div className="absolute top-0 left-0 inset-0 w-full h-[150px] rounded-t-xl bg-purple-600/50">
@@ -215,7 +209,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
 
         <CardHeader className="pt-[93px] flex flex-col z-10">
           <img
-            src={project.logo_url ?? "/images/monad.webp"}
+            src={project.logo_url ?? '/images/monad.webp'}
             alt={`${project.name} logo`}
             height={56}
             width={56}
@@ -223,9 +217,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
           />
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-lg font-bold">
-                {project.name}
-              </CardTitle>
+              <CardTitle className="text-lg font-bold">{project.name}</CardTitle>
               {/* TODO: Integrate with nads_verified_at */}
               {project.nads_verified && project.nads_verified_at && (
                 <NadsVerifiedPopover date={project.nads_verified_at} />
@@ -269,17 +261,17 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
           <div className="flex items-center gap-1 sm:gap-2 text-sm self-end">
             <div
               className="relative"
-              onMouseEnter={() => setHoveredVoteType("FOR")}
+              onMouseEnter={() => setHoveredVoteType('FOR')}
               onMouseLeave={() => setHoveredVoteType(null)}
             >
               <VoteButton
                 variant="for"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!isPreview) handleVote("FOR");
+                  if (!isPreview) handleVote('FOR');
                 }}
-                isPending={pendingVote === "FOR"}
-                disabled={pendingVote === "AGAINST"}
+                isPending={pendingVote === 'FOR'}
+                disabled={pendingVote === 'AGAINST'}
                 alreadyVoted={alreadyVoted}
               >
                 {project.votes_for}
@@ -289,35 +281,33 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
                   <VotesBreakdown
                     votesBreakdown={project.votes_breakdown}
                     type="FOR"
-                    isOpen={hoveredVoteType === "FOR"}
+                    isOpen={hoveredVoteType === 'FOR'}
                   />
                 )}
             </div>
             <div
               className="relative"
-              onMouseEnter={() => setHoveredVoteType("AGAINST")}
+              onMouseEnter={() => setHoveredVoteType('AGAINST')}
               onMouseLeave={() => setHoveredVoteType(null)}
             >
               <VoteButton
                 variant="against"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!isPreview) handleVote("AGAINST");
+                  if (!isPreview) handleVote('AGAINST');
                 }}
-                isPending={pendingVote === "AGAINST"}
-                disabled={pendingVote === "FOR"}
+                isPending={pendingVote === 'AGAINST'}
+                disabled={pendingVote === 'FOR'}
                 alreadyVoted={alreadyVoted}
               >
                 {project.votes_against}
               </VoteButton>
               {project.votes_breakdown &&
-                project.votes_breakdown.some(
-                  (vote) => vote.votes_against > 0
-                ) && (
+                project.votes_breakdown.some((vote) => vote.votes_against > 0) && (
                   <VotesBreakdown
                     votesBreakdown={project.votes_breakdown}
                     type="AGAINST"
-                    isOpen={hoveredVoteType === "AGAINST"}
+                    isOpen={hoveredVoteType === 'AGAINST'}
                   />
                 )}
             </div>
@@ -325,14 +315,13 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
             <div className="relative">
               {project.votes_breakdown &&
                 project.votes_breakdown.some(
-                  (vote) => vote.votes_against > 0 || vote.votes_for > 0
+                  (vote) => vote.votes_against > 0 || vote.votes_for > 0,
                 ) && (
                   <>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (hoveredVoteType !== "BOTH")
-                          setHoveredVoteType("BOTH");
+                        if (hoveredVoteType !== 'BOTH') setHoveredVoteType('BOTH');
                         else setHoveredVoteType(null);
                       }}
                       className="lg:hidden p-2 sm:px-3.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer bg-white/[0.05] shadow-[0_2px_4px_rgba(0,0,0,0.02)]"
@@ -343,7 +332,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
                     <VotesBreakdown
                       votesBreakdown={project.votes_breakdown}
                       type="BOTH"
-                      isOpen={hoveredVoteType === "BOTH"}
+                      isOpen={hoveredVoteType === 'BOTH'}
                     />
                   </>
                 )}

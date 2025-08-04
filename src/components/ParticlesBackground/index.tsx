@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";
+import { useEffect, useState } from 'react';
+import Particles, { initParticlesEngine } from '@tsparticles/react';
+import { loadSlim } from '@tsparticles/slim';
 
 export const ParticlesBackground = () => {
   const [init, setInit] = useState(false);
@@ -23,7 +23,7 @@ export const ParticlesBackground = () => {
     },
     background: {
       color: {
-        value: "transparent",
+        value: 'transparent',
       },
     },
     fpsLimit: 60,
@@ -36,10 +36,10 @@ export const ParticlesBackground = () => {
         },
       },
       color: {
-        value: ["#A855F7", "#9333EA", "#7E22CE"],
+        value: ['#A855F7', '#9333EA', '#7E22CE'],
       },
       shape: {
-        type: "circle",
+        type: 'circle',
       },
       opacity: {
         value: 0.4,
@@ -58,11 +58,11 @@ export const ParticlesBackground = () => {
       move: {
         enable: true,
         speed: 1,
-        direction: "none",
+        direction: 'none',
         random: false,
         straight: false,
         outModes: {
-          default: "out",
+          default: 'out',
         },
         attract: {
           enable: false,
@@ -71,7 +71,7 @@ export const ParticlesBackground = () => {
       links: {
         enable: true,
         distance: 150,
-        color: "#9333EA",
+        color: '#9333EA',
         opacity: 0.4,
         width: 1,
       },

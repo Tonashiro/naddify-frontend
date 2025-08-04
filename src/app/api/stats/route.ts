@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 export interface IStats {
   uniqueVoters: number;
@@ -8,9 +8,7 @@ export interface IStats {
 
 export async function GET() {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`);
 
     if (!res.ok) {
       const error = await res.json();
@@ -22,10 +20,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("Error while retrieving stats:", err);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error('Error while retrieving stats:', err);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }

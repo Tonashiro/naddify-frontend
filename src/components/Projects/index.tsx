@@ -1,6 +1,6 @@
-import { IProject } from "@/app/api/projects/route";
-import { TVoteType } from "@/app/api/votes/[projectId]/route";
-import { ProjectCard } from "@/components/ProjectCard";
+import { IProject } from '@/app/api/projects/route';
+import { TVoteType } from '@/app/api/votes/[projectId]/route';
+import { ProjectCard } from '@/components/ProjectCard';
 
 interface IProjects {
   projects: Array<IProject & { voteType?: TVoteType }>;

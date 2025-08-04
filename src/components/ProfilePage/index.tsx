@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { IVotesStatsResponse } from "@/app/api/votes/me/route";
-import { Leaderboard } from "@/components/Leaderboard";
-import { UserInfoCard } from "@/components/UserInfoCard";
-import { UserProfile } from "@/components/UserProfile";
-import { useUserContext } from "@/contexts/userContext";
-import React from "react";
+import { IVotesStatsResponse } from '@/app/api/votes/me/route';
+import { Leaderboard } from '@/components/Leaderboard';
+import { UserInfoCard } from '@/components/UserInfoCard';
+import { UserProfile } from '@/components/UserProfile';
+import { useUserContext } from '@/contexts/userContext';
+import React from 'react';
 
 interface IProfilePage {
   statsData: IVotesStatsResponse;

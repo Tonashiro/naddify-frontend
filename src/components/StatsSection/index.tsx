@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React from "react";
-import { IStats } from "@/app/api/stats/route";
-import { AnimatedNumber } from "@/components/AnimatedNumber";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { IStats } from '@/app/api/stats/route';
+import { AnimatedNumber } from '@/components/AnimatedNumber';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface IStatsSectionProps {
   stats: IStats;
@@ -16,7 +16,7 @@ export const StatsSection: React.FC<IStatsSectionProps> = ({ stats }) => {
       {/* Highlighted Stat */}
       <Card
         className={cn(
-          "w-full bg-gradient-to-t from-purple-700 via-purple-800 to-indigo-900 text-white shadow-lg border-0"
+          'w-full bg-gradient-to-t from-purple-700 via-purple-800 to-indigo-900 text-white shadow-lg border-0',
         )}
       >
         <CardContent className="flex flex-col items-center justify-center">
@@ -30,17 +30,13 @@ export const StatsSection: React.FC<IStatsSectionProps> = ({ stats }) => {
         <Card className="text-center bg-gradient-to-r from-zinc-900 via-neutral-900 to-zinc-800 shadow-md">
           <CardContent>
             <AnimatedNumber total={stats?.totalProjects} />
-            <CardTitle className="text-md sm:text-lg">
-              Total Projects
-            </CardTitle>
+            <CardTitle className="text-md sm:text-lg">Total Projects</CardTitle>
           </CardContent>
         </Card>
         <Card className="text-center bg-gradient-to-r from-zinc-900 via-neutral-900 to-zinc-800 shadow-md">
           <CardContent>
             <AnimatedNumber total={stats?.uniqueVoters} />
-            <CardTitle className="text-md sm:text-lg">
-              Unique voters
-            </CardTitle>
+            <CardTitle className="text-md sm:text-lg">Unique voters</CardTitle>
           </CardContent>
         </Card>
       </div>

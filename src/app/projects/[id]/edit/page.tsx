@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
-import { EditProjectPage } from "@/components/EditProjectPage";
-import { Suspense } from "react";
-import { Spinner } from "@/components/Spinner";
+import { notFound } from 'next/navigation';
+import { EditProjectPage } from '@/components/EditProjectPage';
+import { Suspense } from 'react';
+import { Spinner } from '@/components/Spinner';
 
 interface EditProjectProps {
   params: Promise<{ id: string }>;
@@ -21,7 +21,7 @@ export default async function EditProject({ params }: EditProjectProps) {
     if (projectResponse.status === 404) {
       notFound();
     }
-    throw new Error("Failed to fetch project data");
+    throw new Error('Failed to fetch project data');
   }
 
   // Parse JSON responses
@@ -38,10 +38,7 @@ export default async function EditProject({ params }: EditProjectProps) {
         </div>
       }
     >
-      <EditProjectPage
-        project={projectData}
-        categoryOptions={categoryOptions}
-      />
+      <EditProjectPage project={projectData} categoryOptions={categoryOptions} />
     </Suspense>
   );
 }

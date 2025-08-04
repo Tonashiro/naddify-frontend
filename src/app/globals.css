@@ -3,7 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
 @theme inline {
   --color-background: #050508;
   --color-background-secondary: #f2dae1;
@@ -57,19 +56,14 @@ body {
   scroll-behavior: smooth;
 }
 
-
 html body[data-scroll-locked] {
   overflow: visible !important;
   margin-right: 0 !important;
-} 
-
+}
 
 .bg-gradient {
-  background-image: radial-gradient(
-      circle at top left,
-      #0c0c11,
-      rgba(12, 12, 17, 0) 70%
-    ),
+  background-image:
+    radial-gradient(circle at top left, #0c0c11, rgba(12, 12, 17, 0) 70%),
     radial-gradient(circle at top right, #1f102d, rgba(17, 12, 22, 0) 70%),
     radial-gradient(circle at bottom left, #121723, rgba(12, 15, 22, 0) 70%),
     linear-gradient(to bottom right, #0a0a0f, #050508);
@@ -80,7 +74,7 @@ html body[data-scroll-locked] {
   --background: oklch(1 0 0);
   --foreground: oklch(0.13 0.028 261.692);
   --card: #161728;
-  --card-foreground: #FFFFFF;
+  --card-foreground: #ffffff;
   --card-border: #e5e7eb;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.13 0.028 261.692);
@@ -117,8 +111,7 @@ html body[data-scroll-locked] {
   --foreground: oklch(0.985 0.002 247.839);
   --card: oklch(0.21 0.034 264.665);
   --card-foreground: oklch(0.985 0.002 247.839);
-  --card-border: hsla(0, 0%, 100%, .05)
-  --popover: oklch(0.21 0.034 264.665);
+  --card-border: hsla(0, 0%, 100%, 0.05) --popover: oklch(0.21 0.034 264.665);
   --popover-foreground: oklch(0.985 0.002 247.839);
   --primary: oklch(0.928 0.006 264.531);
   --primary-foreground: oklch(0.21 0.034 264.665);

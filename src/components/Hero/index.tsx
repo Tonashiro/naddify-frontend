@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import { AddProjectCard } from "@/components/AddProjectCard";
-import { useUserContext } from "@/contexts/userContext";
-import Link from "next/link";
+import React from 'react';
+import { AddProjectCard } from '@/components/AddProjectCard';
+import { useUserContext } from '@/contexts/userContext';
+import Link from 'next/link';
 
 /**
  * The `Hero` component is a React functional component that renders a hero section
@@ -34,17 +34,13 @@ export const Hero: React.FC = () => {
           Vote. Verify. Discover.
         </h2>
         <p className="text-lg sm:text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto font-medium">
-          Naddify is a platform for community-led project discovery on{" "}
-          <Link
-            href="https://testnet.monad.xyz"
-            target="_blank"
-            className="text-[#836EF9]"
-          >
-            {" "}
+          Naddify is a platform for community-led project discovery on{' '}
+          <Link href="https://testnet.monad.xyz" target="_blank" className="text-[#836EF9]">
+            {' '}
             Monad.
-          </Link>{" "}
-          Trusted community members vote and verify, helping you discover what
-          truly deserves attention.
+          </Link>{' '}
+          Trusted community members vote and verify, helping you discover what truly deserves
+          attention.
         </p>
       </div>
 

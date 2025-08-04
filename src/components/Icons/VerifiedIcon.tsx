@@ -1,13 +1,10 @@
-import React from "react";
+import React from 'react';
 
 interface IVerifiedIconProps extends React.SVGProps<SVGSVGElement> {
   size?: number | string;
 }
 
-export const VerifiedIcon: React.FC<IVerifiedIconProps> = ({
-  size = 24,
-  ...props
-}) => {
+export const VerifiedIcon: React.FC<IVerifiedIconProps> = ({ size = 24, ...props }) => {
   return (
     <svg
       viewBox="0 0 22 22"

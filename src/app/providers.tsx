@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { IUser, UserContextProvider } from "@/contexts/userContext";
+import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { IUser, UserContextProvider } from '@/contexts/userContext';
 
 const queryClient = new QueryClient();
 
@@ -24,15 +24,10 @@ interface ProvidersProps {
  * </Providers>
  * ```
  */
-export const Providers: React.FC<ProvidersProps> = ({
-  children,
-  initialUser,
-}) => {
+export const Providers: React.FC<ProvidersProps> = ({ children, initialUser }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <UserContextProvider initialUser={initialUser}>
-        {children}
-      </UserContextProvider>
+      <UserContextProvider initialUser={initialUser}>{children}</UserContextProvider>
     </QueryClientProvider>
   );
 };

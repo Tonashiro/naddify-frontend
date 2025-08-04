@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Table,
   TableBody,
@@ -6,7 +6,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
 export const Leaderboard = () => {
   // Generate 20 fake rows
@@ -37,10 +37,7 @@ export const Leaderboard = () => {
         </TableHeader>
         <TableBody>
           {fakeRows.map((row, index) => (
-            <TableRow
-              key={row.id}
-              className={index % 2 === 0 ? "bg-gray-700" : "bg-gray-900"}
-            >
+            <TableRow key={row.id} className={index % 2 === 0 ? 'bg-gray-700' : 'bg-gray-900'}>
               <TableCell>{row.id}</TableCell>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.totalVotes}</TableCell>

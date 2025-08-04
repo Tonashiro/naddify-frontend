@@ -1,5 +1,5 @@
-import { Medal, Stars } from "lucide-react";
-import React from "react";
+import { Medal, Stars } from 'lucide-react';
+import React from 'react';
 
 interface IUserInfoCard {
   totalVotes: number;

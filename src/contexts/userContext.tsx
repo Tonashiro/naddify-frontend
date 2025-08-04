@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Cookies from "js-cookie";
-import { useQuery } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import Cookies from 'js-cookie';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   createContext,
   ReactNode,
@@ -11,7 +11,7 @@ import {
   useEffect,
   useMemo,
   useState,
-} from "react";
+} from 'react';
 
 export interface IUser {
   id: string;
@@ -48,16 +48,16 @@ export const UserContextProvider = ({
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const token = searchParams.get("token");
+    const token = searchParams.get('token');
 
     if (token) {
-      Cookies.set("token", token, {
-        path: "/",
+      Cookies.set('token', token, {
+        path: '/',
         expires: 7,
-        sameSite: "Lax",
+        sameSite: 'Lax',
         secure: true,
       });
-      router.replace("/");
+      router.replace('/');
     }
   }, [searchParams, router]);
 
@@ -67,10 +67,10 @@ export const UserContextProvider = ({
   }, [router]);
 
   const { isLoading, refetch } = useQuery<IUser | null>({
-    queryKey: ["user"],
+    queryKey: ['user'],
     queryFn: async () => {
-      const res = await fetch("/api/user", {
-        credentials: "include",
+      const res = await fetch('/api/user', {
+        credentials: 'include',
       });
 
       if (res.ok) {
@@ -79,7 +79,7 @@ export const UserContextProvider = ({
 
         return userData;
       } else {
-        throw new Error("Failed to fetch user");
+        throw new Error('Failed to fetch user');
       }
     },
     enabled: !initialUser, // Only fetch if initialUser is not provided
@@ -89,19 +89,17 @@ export const UserContextProvider = ({
 
   const contextValue = useMemo(
     () => ({ user, isLoading, refetch, connectDiscord, setUser }),
-    [user, isLoading, refetch, connectDiscord]
+    [user, isLoading, refetch, connectDiscord],
   );
 
-  return (
-    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
-  );
+  return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 export const useUserContext = (): IUserContext => {
   const context = useContext(UserContext);
 
   if (!context) {
-    throw new Error("useUserContext must be used within a UserContextProvider");
+    throw new Error('useUserContext must be used within a UserContextProvider');
   }
 
   return context;

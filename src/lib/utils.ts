@@ -1,5 +1,5 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -11,8 +11,7 @@ export const isNew = (created_at: string | undefined) => {
   const createdDate = new Date(created_at);
   const currentDate = new Date();
 
-  const differenceInDays =
-    (currentDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+  const differenceInDays = (currentDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
 
   return differenceInDays < 3;
 };

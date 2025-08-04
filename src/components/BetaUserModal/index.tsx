@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import {
   Dialog,
   DialogTrigger,
@@ -10,7 +10,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -18,12 +18,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { IUser, useUserContext } from "@/contexts/userContext";
-import { toast } from "react-toastify";
-import { Spinner } from "@/components/Spinner";
-import { isAddress } from "viem";
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { IUser, useUserContext } from '@/contexts/userContext';
+import { toast } from 'react-toastify';
+import { Spinner } from '@/components/Spinner';
+import { isAddress } from 'viem';
 
 interface IFormValues {
   wallet_address: string;
@@ -34,27 +34,24 @@ interface IBetaUserModal {
   setIsModalOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
-export const BetaUserModal: React.FC<IBetaUserModal> = ({
-  isModalOpen,
-  setIsModalOpen,
-}) => {
+export const BetaUserModal: React.FC<IBetaUserModal> = ({ isModalOpen, setIsModalOpen }) => {
   const { user, setUser } = useUserContext();
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   const form = useForm<IFormValues>({
     defaultValues: {
-      wallet_address: user?.wallet_address ?? "",
+      wallet_address: user?.wallet_address ?? '',
     },
   });
 
   const handleSubmit = async (data: IFormValues) => {
     try {
       setIsPending(true);
-      const response = await fetch("/api/wallet", {
-        method: "POST",
+      const response = await fetch('/api/wallet', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ wallet_address: data.wallet_address }),
       });
@@ -62,13 +59,13 @@ export const BetaUserModal: React.FC<IBetaUserModal> = ({
       if (!response.ok) {
         const error = await response.json();
         setIsPending(false);
-        throw new Error(error.message || "Failed to submit wallet address");
+        throw new Error(error.message || 'Failed to submit wallet address');
       }
 
       const updatedUser: IUser = await response.json();
       setUser(updatedUser);
 
-      toast.success("Wallet address submitted successfully!");
+      toast.success('Wallet address submitted successfully!');
       setIsOpen(false);
       setIsPending(false);
 
@@ -77,9 +74,9 @@ export const BetaUserModal: React.FC<IBetaUserModal> = ({
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message || "An unexpected error occurred");
+        toast.error(error.message || 'An unexpected error occurred');
       } else {
-        toast.error("An unexpected error occurred");
+        toast.error('An unexpected error occurred');
       }
     }
   };
@@ -87,7 +84,7 @@ export const BetaUserModal: React.FC<IBetaUserModal> = ({
   const handleOpenChange = (open: boolean) => {
     if (open && user?.wallet_address && isModalOpen === undefined) {
       toast.info(
-        "You already submitted your wallet address. If you want to change it, head to your profile and click on 'Change Wallet Address'."
+        "You already submitted your wallet address. If you want to change it, head to your profile and click on 'Change Wallet Address'.",
       );
       return;
     }
@@ -123,17 +120,13 @@ export const BetaUserModal: React.FC<IBetaUserModal> = ({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               name="wallet_address"
               control={form.control}
               rules={{
-                required: "Wallet address is required",
-                validate: (value) =>
-                  isAddress(value) || "Invalid wallet address format",
+                required: 'Wallet address is required',
+                validate: (value) => isAddress(value) || 'Invalid wallet address format',
               }}
               render={({ field }) => (
                 <FormItem>

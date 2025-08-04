@@ -1,11 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { UserMenu } from "@/components/UserMenu";
-import { useUserContext } from "@/contexts/userContext";
-import { BetaUserModal } from "@/components/BetaUserModal";
+import React from 'react';
+import Link from 'next/link';
+import { UserMenu } from '@/components/UserMenu';
+import { useUserContext } from '@/contexts/userContext';
+import { BetaUserModal } from '@/components/BetaUserModal';
 
 /**
  * A reusable navigation item component with hover effects.
@@ -21,16 +21,10 @@ import { BetaUserModal } from "@/components/BetaUserModal";
  * <NavItem href="/about" label="About" />
  * ```
  */
-export const NavItem: React.FC<{ href: string; label: string }> = ({
-  href,
-  label,
-}) => {
+export const NavItem: React.FC<{ href: string; label: string }> = ({ href, label }) => {
   return (
     <li className="relative group">
-      <Link
-        href={href}
-        className="text-gray-200 hover:text-purple-400 transition-colors"
-      >
+      <Link href={href} className="text-gray-200 hover:text-purple-400 transition-colors">
         {label}
       </Link>
       <span className="absolute left-0 bottom-[-3px] h-[2px] w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
@@ -66,19 +60,12 @@ export const Navbar: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="group flex items-center cursor-pointer hover:scale-110 transition-transform duration-300">
           <Link href="/">
-            <img
-              src="/images/naddify.webp"
-              alt="Naddify Logo"
-              width={50}
-              height={50}
-            />
+            <img src="/images/naddify.webp" alt="Naddify Logo" width={50} height={50} />
           </Link>
         </div>
 
         <ul className="hidden md:flex items-center space-x-6">
-          {user?.is_admin && (
-            <NavItem href="/projects/add" label="Add Project" />
-          )}
+          {user?.is_admin && <NavItem href="/projects/add" label="Add Project" />}
         </ul>
 
         <div className="flex items-center gap-2">
