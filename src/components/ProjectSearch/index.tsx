@@ -1,12 +1,12 @@
-import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import { Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useDebounce } from '@/hooks/useDebounce'
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface IProjectSearchProps {
-  className?: string
-  onSearch: (query: string) => void
+  className?: string;
+  onSearch: (query: string) => void;
 }
 
 /**
@@ -50,16 +50,13 @@ interface IProjectSearchProps {
  * @param props - Component props
  * @returns A search input field with debounced search functionality
  */
-export const ProjectSearch: React.FC<IProjectSearchProps> = ({
-  className,
-  onSearch,
-}) => {
-  const [value, setValue] = useState('')
-  const debouncedValue = useDebounce(value, 300)
+export const ProjectSearch: React.FC<IProjectSearchProps> = ({ className, onSearch }) => {
+  const [value, setValue] = useState('');
+  const debouncedValue = useDebounce(value, 300);
 
   useEffect(() => {
-    onSearch(debouncedValue)
-  }, [debouncedValue, onSearch])
+    onSearch(debouncedValue);
+  }, [debouncedValue, onSearch]);
 
   return (
     <div className={cn('relative', className)}>
@@ -71,5 +68,5 @@ export const ProjectSearch: React.FC<IProjectSearchProps> = ({
         onChange={(e) => setValue(e.target.value)}
       />
     </div>
-  )
-}
+  );
+};

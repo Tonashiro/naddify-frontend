@@ -1,17 +1,17 @@
-import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Dispatch, SetStateAction, useRef, useState } from 'react'
+import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 
 interface ICategoryOption {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface ICategoriesCarouselProps {
-  selectedCategories: string[]
-  setSelectedCategories: Dispatch<SetStateAction<string[]>>
-  categories: ICategoryOption[]
-  className?: string
+  selectedCategories: string[];
+  setSelectedCategories: Dispatch<SetStateAction<string[]>>;
+  categories: ICategoryOption[];
+  className?: string;
 }
 
 /**
@@ -62,41 +62,39 @@ export const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({
   categories,
   className,
 }) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [showLeftArrow, setShowLeftArrow] = useState(false)
-  const [showRightArrow, setShowRightArrow] = useState(true)
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
 
-  const allCategories = [{ id: 'all', name: 'All' }, ...categories]
+  const allCategories = [{ id: 'all', name: 'All' }, ...categories];
 
   const handleCategorySelect = (categoryId: string) => {
     if (categoryId === 'all') {
-      setSelectedCategories([])
+      setSelectedCategories([]);
     } else {
-      setSelectedCategories((prev) =>
-        prev.includes(categoryId) ? [] : [categoryId],
-      )
+      setSelectedCategories((prev) => (prev.includes(categoryId) ? [] : [categoryId]));
     }
-  }
+  };
 
   const handleScroll = () => {
-    if (!scrollContainerRef.current) return
+    if (!scrollContainerRef.current) return;
 
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
-    setShowLeftArrow(scrollLeft > 0)
-    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10)
-  }
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    setShowLeftArrow(scrollLeft > 0);
+    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+  };
 
   const scroll = (direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return
+    if (!scrollContainerRef.current) return;
 
     // Calculate scroll amount based on button width + gap (approximately 160px + 8px)
-    const itemWidth = 168
-    const scrollAmount = itemWidth * 3 // Scroll 3 items at a time
+    const itemWidth = 168;
+    const scrollAmount = itemWidth * 3; // Scroll 3 items at a time
     scrollContainerRef.current.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
-    })
-  }
+    });
+  };
 
   return (
     <div className={cn('relative w-full', className)}>
@@ -123,12 +121,12 @@ export const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({
               category.name === 'Devnads'
                 ? 'bg-amber-400 text-white font-medium shadow-[0_4px_8px_rgba(245,158,11,0.3),0_0_0_1px_rgba(245,158,11,0.35)]'
                 : category.id === 'all'
-                ? selectedCategories.length === 0
-                  ? 'bg-purple-600 text-white shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]'
-                  : 'bg-gray-100/7 text-gray-300 hover:bg-gray-100/10 shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]'
-                : selectedCategories.includes(category.id)
-                ? 'bg-purple-600 text-white shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]'
-                : 'bg-gray-100/7 text-gray-300 hover:bg-gray-100/10 shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]',
+                  ? selectedCategories.length === 0
+                    ? 'bg-purple-600 text-white shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]'
+                    : 'bg-gray-100/7 text-gray-300 hover:bg-gray-100/10 shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]'
+                  : selectedCategories.includes(category.id)
+                    ? 'bg-purple-600 text-white shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]'
+                    : 'bg-gray-100/7 text-gray-300 hover:bg-gray-100/10 shadow-[0_4px_8px_rgba(168,85,247,0.2),0_0_0_1px_rgba(168,85,247,0.25)]',
             )}
           >
             {category.name}
@@ -145,5 +143,5 @@ export const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({
         </button>
       )}
     </div>
-  )
-}
+  );
+};

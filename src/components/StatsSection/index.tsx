@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { IStats } from '@/app/api/stats/route'
-import { AnimatedNumber } from '@/components/AnimatedNumber'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import React from 'react';
+import { IStats } from '@/app/api/stats/route';
+import { AnimatedNumber } from '@/components/AnimatedNumber';
+import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 
 interface IStatsSectionProps {
-  stats: IStats
+  stats: IStats;
 }
 
 export const StatsSection: React.FC<IStatsSectionProps> = ({ stats }) => {
@@ -41,5 +41,5 @@ export const StatsSection: React.FC<IStatsSectionProps> = ({ stats }) => {
         </CardDescription>
       </Card>
     </section>
-  )
-}
+  );
+};

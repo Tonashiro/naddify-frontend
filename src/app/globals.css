@@ -146,12 +146,12 @@ html body[data-scroll-locked] {
 
 /* Hide scrollbar but keep functionality */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none; /* Chrome, Safari and Opera */
 }
 
 /* Team image hover effect */
@@ -161,10 +161,14 @@ html body[data-scroll-locked] {
 }
 
 .team-image::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom right, rgba(52, 211, 153, 0.1), rgba(52, 211, 153, 0.05));
+  background: linear-gradient(
+    to bottom right,
+    rgba(52, 211, 153, 0.1),
+    rgba(52, 211, 153, 0.05)
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
   border-radius: 4px;

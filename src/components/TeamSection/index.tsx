@@ -1,5 +1,5 @@
-import { Badge } from '../ui/badge'
-import Image from 'next/image'
+import { Badge } from '../ui/badge';
+import Image from 'next/image';
 
 const teamMembers = [
   {
@@ -62,7 +62,7 @@ const teamMembers = [
     image: 'images/team/rosin.jpeg',
     twitter: 'rosinxyz',
   },
-]
+];
 
 export const TeamSection = () => {
   return (
@@ -74,8 +74,7 @@ export const TeamSection = () => {
         Meet Our Team
       </h2>
       <p className="text-lg sm:text-xl text-gray-300 leading-relaxed max-w-2xl text-center font-medium">
-        A team of developers, designers, and community experts bringing Naddify
-        to you.
+        A team of developers, designers, and community experts bringing Naddify to you.
       </p>
 
       <div className="flex flex-wrap justify-center gap-10 sm:gap-16 mt-10">
@@ -115,5 +114,5 @@ export const TeamSection = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

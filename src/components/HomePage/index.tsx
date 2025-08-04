@@ -138,7 +138,7 @@ export const HomePage: React.FC<IHomePage> = ({
           fetchNextPageCallback();
         }
       },
-      { threshold: 0.25 }
+      { threshold: 0.25 },
     );
 
     const currentRef = loadMoreRef.current;
@@ -155,12 +155,12 @@ export const HomePage: React.FC<IHomePage> = ({
         ...project,
         voteType: userVotes?.votes?.find((vote) => vote.projectId === project.id)?.voteType,
       }))
-    : data?.pages
+    : (data?.pages
         .flatMap((page) => page.projects)
         .map((project: IProject) => ({
           ...project,
           voteType: userVotes?.votes?.find((vote) => vote.projectId === project.id)?.voteType,
-        })) ?? [];
+        })) ?? []);
 
   //remove after backend is updated
   const allCategories = useMemo(() => {
