@@ -1,27 +1,21 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import { CalendarDays } from "lucide-react";
-import { VerifiedIcon } from "@/components/Icons/VerifiedIcon";
-import { PopoverArrow } from "@radix-ui/react-popover";
+import React, { useState } from 'react';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { CalendarDays } from 'lucide-react';
+import { VerifiedIcon } from '@/components/Icons/VerifiedIcon';
+import { PopoverArrow } from '@radix-ui/react-popover';
 
 interface INadsVerifiedPopoverProps {
   date: Date;
 }
 
-export const NadsVerifiedPopover: React.FC<INadsVerifiedPopoverProps> = ({
-  date,
-}) => {
+export const NadsVerifiedPopover: React.FC<INadsVerifiedPopoverProps> = ({ date }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-const formattedDate = new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
+  const formattedDate = new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
   });
 
   return (
@@ -36,7 +30,7 @@ const formattedDate = new Date(date).toLocaleDateString("en-US", {
             setIsOpen((prev) => !prev);
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
+            if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               setIsOpen((prev) => !prev);
             }
@@ -55,15 +49,11 @@ const formattedDate = new Date(date).toLocaleDateString("en-US", {
       >
         <div className="flex items-center gap-2">
           <VerifiedIcon size={20} />
-          <span className="text-sm font-medium text-white">
-            This project is nads verified.
-          </span>
+          <span className="text-sm font-medium text-white">This project is nads verified.</span>
         </div>
         <div className="flex items-center gap-2 mt-2">
           <CalendarDays className="text-white" size={20} />
-          <span className="text-sm text-muted-foreground">
-            Verified since {formattedDate}.
-          </span>
+          <span className="text-sm text-muted-foreground">Verified since {formattedDate}.</span>
         </div>
         <PopoverArrow className="fill-gray-800/95 w-5 h-2" />
       </PopoverContent>

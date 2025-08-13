@@ -1,62 +1,18 @@
-import { HomePage } from '@/components/HomePage'
-import { Spinner } from '@/components/Spinner'
-import { PROJECTS_AMOUNT_LIMIT } from '@/constants'
-import { cookies } from 'next/headers'
-import { Suspense } from 'react'
+import { HomePage } from '@/components/HomePage';
+import { Spinner } from '@/components/Spinner';
+import { Suspense } from 'react';
 
 export default async function Home() {
-  const cookieStorage = await cookies()
-  const token = cookieStorage.get('token')?.value
+  // Only fetch stats here since projects data is now in layout
+  const statsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`, {
+    next: { revalidate: 1 },
+  });
 
-  // Fetch categories, stats, and projects in parallel
-  const [categoriesResponse, statsResponse, projectsResponse] =
-    await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/categories`),
-      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stats`, {
-        next: { revalidate: 1 },
-      }),
-      fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`,
-      ),
-    ])
-
-  if (!categoriesResponse.ok) {
-    throw new Error('Failed to fetch categories')
-  }
   if (!statsResponse.ok) {
-    throw new Error('Failed to fetch stats')
-  }
-  if (!projectsResponse.ok) {
-    throw new Error('Failed to fetch projects')
+    throw new Error('Failed to fetch stats');
   }
 
-  const [categories, stats, projectsData] = await Promise.all([
-    categoriesResponse.json(),
-    statsResponse.json(),
-    projectsResponse.json(),
-  ])
-
-  // Fetch user votes only if a token is available
-  const userVotes = token
-    ? await (async () => {
-        const userVotesResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/votes/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        )
-
-        if (!userVotesResponse.ok) {
-          console.error('Failed to fetch user votes')
-          return null // Return null if the request fails
-        }
-
-        return userVotesResponse.json()
-      })()
-    : null // Return null if no token is available
+  const stats = await statsResponse.json();
 
   return (
     <Suspense
@@ -66,12 +22,7 @@ export default async function Home() {
         </div>
       }
     >
-      <HomePage
-        categories={categories}
-        stats={stats}
-        initialProjects={projectsData}
-        userVotes={userVotes}
-      />
+      <HomePage stats={stats} />
     </Suspense>
-  )
+  );
 }

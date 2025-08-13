@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from 'react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 interface ICategoryOption {
   id: string;
@@ -26,12 +26,10 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
   categories,
 }) => {
   const handleCategorySelect = (categoryId: string) => {
-    if (categoryId === "all") {
+    if (categoryId === 'all') {
       setSelectedCategories([]); // Clear all selected categories
     } else {
-      setSelectedCategories((prev) =>
-        prev.includes(categoryId) ? [] : [categoryId]
-      );
+      setSelectedCategories((prev) => (prev.includes(categoryId) ? [] : [categoryId]));
     }
   };
 
@@ -41,7 +39,7 @@ export const ProjectFilter: React.FC<ProjectFilterProps> = ({
         <h2 className="text-lg font-semibold mb-2">Categories</h2>
         <Select
           onValueChange={(value) => handleCategorySelect(value)}
-          value={selectedCategories[0] || "all"}
+          value={selectedCategories[0] || 'all'}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select a category" />

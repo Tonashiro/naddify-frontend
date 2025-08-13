@@ -1,98 +1,31 @@
-import { Badge } from '../ui/badge'
-import Image from 'next/image'
-
-const teamMembers = [
-  {
-    name: 'Mondalf',
-    role: 'Founder',
-    image: 'images/team/andalf.jpeg',
-    twitter: 'andalfthegreat',
-  },
-  {
-    name: 'Toad',
-    role: 'Founder',
-    image: 'images/team/toad.png',
-    twitter: 'Toadster69',
-  },
-  {
-    name: 'Tonashiro',
-    role: 'Developer/Founder',
-    image: 'images/team/tonashiro.png',
-    twitter: 'tonashiro_',
-  },
-  {
-    name: 'Benja',
-    role: 'Founder',
-    image: 'images/team/benja.jpeg',
-    twitter: '1stBenjaNAD',
-  },
-  {
-    name: 'Velkan',
-    role: 'Developer',
-    image: 'images/team/velkan.jpeg',
-    twitter: 'velkan_gst',
-  },
-  {
-    name: 'Novee',
-    role: 'Backend Supporter',
-    image: 'images/team/novee.png',
-    twitter: 'Novee_VeenoX',
-  },
-  {
-    name: 'Diegovas',
-    role: 'Contributor',
-    image: 'images/team/diego.jpeg',
-    twitter: 'vasdie',
-  },
-  {
-    name: 'g-van',
-    role: 'Contributor',
-    image: 'images/team/gvan.jpeg',
-    twitter: '_gvan',
-  },
-  {
-    name: 'Ray J',
-    role: 'Contributor',
-    image: 'images/team/rayj.jpeg',
-    twitter: '0xRayJ',
-  },
-  {
-    name: 'Rosin',
-    role: 'Contributor',
-    image: 'images/team/rosin.jpeg',
-    twitter: 'rosinxyz',
-  },
-]
+import Image from 'next/image';
+import { TEAM_MEMBERS } from '@/constants';
+import { SectionHeader } from '@/components/SectionHeader';
 
 export const TeamSection = () => {
   return (
-    <div className="flex flex-col gap-6 justify-center items-center mt-10 mb-24">
-      <Badge variant="default" className="font-bold">
-        TEAM
-      </Badge>
-      <h2 className="text-3xl sm:text-5xl font-bold bg-gradient-to-r from-purple-300 via-purple-500 to-indigo-400 bg-clip-text text-transparent">
-        Meet Our Team
-      </h2>
-      <p className="text-lg sm:text-xl text-gray-300 leading-relaxed max-w-2xl text-center font-medium">
-        A team of developers, designers, and community experts bringing Naddify
-        to you.
-      </p>
+    <div
+      id="team"
+      className="flex flex-col gap-6 justify-center items-center mt-16 mb-24 pt-[5%] max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <SectionHeader
+        title="TEAM"
+        subtitle="Meet Our Team"
+        description="A team of developers, designers, and community experts bringing Naddify to you."
+      />
 
       <div className="flex flex-wrap justify-center gap-10 sm:gap-16 mt-10">
-        {teamMembers.map((member) => (
+        {TEAM_MEMBERS.map((member) => (
           <div key={member.name} className="flex flex-col items-center gap-3">
             <div className="relative w-32 sm:w-40 h-32 sm:h-40">
               <div
-                className="team-image"
+                className="w-full h-full rounded-lg bg-cover bg-center transition-all duration-300 ease-in-out relative hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(52,211,153,0.15)] group"
                 style={{
                   backgroundImage: `url(${member.image})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '8px',
                 }}
-              />
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/10 to-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out rounded-lg" />
+              </div>
             </div>
 
             <div className="flex flex-col items-center gap-1">
@@ -115,5 +48,5 @@ export const TeamSection = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

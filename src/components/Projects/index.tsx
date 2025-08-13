@@ -1,11 +1,11 @@
-import { IProject } from '@/app/api/projects/route'
-import { TVoteType } from '@/app/api/votes/[projectId]/route'
-import { ProjectCard } from '@/components/ProjectCard'
-import { ProjectCardSkeleton } from '@/components/ProjectCardSkeleton'
+import { IProject } from '@/app/api/projects/route';
+import { TVoteType } from '@/app/api/votes/[projectId]/route';
+import { ProjectCard } from '@/components/ProjectCard';
+import { ProjectCardSkeleton } from '@/components/ProjectCardSkeleton';
 
 interface IProjects {
-  projects: Array<IProject & { voteType?: TVoteType }>
-  isLoading?: boolean
+  projects: Array<IProject & { voteType?: TVoteType }>;
+  isLoading?: boolean;
 }
 
 /**
@@ -51,11 +51,11 @@ export const Projects = ({ projects, isLoading }: IProjects) => {
   if (isLoading) {
     return (
       <section className="min-h-[200px] grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 mb-[5%]">
-        {[...Array(2)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <ProjectCardSkeleton key={i} />
         ))}
       </section>
-    )
+    );
   }
 
   return (
@@ -64,5 +64,5 @@ export const Projects = ({ projects, isLoading }: IProjects) => {
         <ProjectCard key={project.id} project={project} />
       ))}
     </section>
-  )
-}
+  );
+};

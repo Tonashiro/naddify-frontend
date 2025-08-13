@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface IRoleCircleProps extends React.SVGProps<SVGSVGElement> {
   size?: number | string;
@@ -7,7 +7,7 @@ interface IRoleCircleProps extends React.SVGProps<SVGSVGElement> {
 
 export const RoleCircle: React.FC<IRoleCircleProps> = ({
   size = 8,
-  color = "#FD2489",
+  color = '#FD2489',
   ...props
 }) => {
   return (

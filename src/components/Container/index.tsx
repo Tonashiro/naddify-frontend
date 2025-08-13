@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from 'react';
 
 /**
  * A reusable `Container` component that serves as a layout wrapper.
@@ -19,9 +19,7 @@ import type { ReactNode } from 'react'
  * ```
  */
 const Container = ({ children }: { children: ReactNode }) => {
-  return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-16">{children}</div>
-  )
-}
+  return <div className="mx-auto w-full max-w-[1920px] px-[10%]">{children}</div>;
+};
 
-export default Container
+export default Container;

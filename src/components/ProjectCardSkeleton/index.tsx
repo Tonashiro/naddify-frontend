@@ -1,5 +1,5 @@
-import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /**
  * The `ProjectCardSkeleton` component is a skeleton loading state for the `ProjectCard` component.
@@ -58,5 +58,5 @@ export const ProjectCardSkeleton = () => {
         <Skeleton className="h-8 w-24" />
       </div>
     </Card>
-  )
-}
+  );
+};

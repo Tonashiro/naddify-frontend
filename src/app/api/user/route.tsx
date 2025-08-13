@@ -1,26 +1,23 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { IUser } from "@/contexts/userContext";
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { IUser } from '@/contexts/userContext';
 
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const token = cookieStore.get('token')?.value;
 
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (!res.ok) {
       const error = await res.json();
@@ -32,10 +29,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (err) {
-    console.error("Error fetching user data:", err);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error('Error fetching user data:', err);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
