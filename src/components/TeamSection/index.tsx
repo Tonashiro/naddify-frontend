@@ -6,7 +6,7 @@ export const TeamSection = () => {
   return (
     <div
       id="team"
-      className="flex flex-col gap-6 justify-center items-center mt-16 mb-24 pt-[5%] max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+      className="flex flex-col gap-6 justify-center items-center mt-16 mb-24 pt-[5%] max-w-6xl mx-auto lg:px-8"
     >
       <SectionHeader
         title="TEAM"

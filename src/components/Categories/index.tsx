@@ -18,7 +18,7 @@ export const Categories = () => {
         description="Discover projects across various categories in the Monad ecosystem."
       />
 
-      <div className="flex justify-center items-center flex-wrap px-8 gap-6 max-w-7xl mx-auto mt-10">
+      <div className="flex justify-center items-center flex-wrap sm:px-8 gap-4 sm:gap-6 max-w-7xl mx-auto mt-10">
         {filteredCategories.map((category) => (
           <Link href={`/projects?category=${category.name.toLowerCase()}`} key={category.id}>
             <Card

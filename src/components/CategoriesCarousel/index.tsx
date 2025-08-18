@@ -98,11 +98,19 @@ export const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
 
-    // Calculate scroll amount based on button width + gap (approximately 160px + 8px)
-    const itemWidth = 168;
-    const scrollAmount = itemWidth * 3; // Scroll 3 items at a time
-    scrollContainerRef.current.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
+    const container = scrollContainerRef.current;
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+
+    const scrollAmount = Math.min(clientWidth * 0.8, 300);
+
+    const maxScrollLeft = scrollWidth - clientWidth;
+    const targetScrollLeft =
+      direction === 'left'
+        ? Math.max(0, scrollLeft - scrollAmount)
+        : Math.min(maxScrollLeft, scrollLeft + scrollAmount);
+
+    container.scrollTo({
+      left: targetScrollLeft,
       behavior: 'smooth',
     });
   };
@@ -132,10 +140,10 @@ export const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({
                   ? 'selected'
                   : 'default'
                 : selectedCategories.includes(category.id)
-                  ? 'selected'
-                  : category.name === 'Devnads'
-                    ? 'Devnads'
-                    : 'default'
+                ? 'selected'
+                : category.name === 'Devnads'
+                ? 'Devnads'
+                : 'default'
             }
             className="px-4 py-2 rounded-full text-sm w-fit"
           >

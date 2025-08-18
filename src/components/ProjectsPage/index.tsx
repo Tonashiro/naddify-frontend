@@ -28,7 +28,7 @@ export const ProjectsPage = () => {
     const categoryParam = searchParams.get('category');
     if (categoryParam && categoryParam !== 'all') {
       const category = categories.find(
-        (cat) => cat.name.toLowerCase() === categoryParam.toLowerCase(),
+        (cat) => cat.name.toLowerCase() === categoryParam.toLowerCase()
       );
       if (category) {
         setSelectedCategories([category.id]);
@@ -85,7 +85,7 @@ export const ProjectsPage = () => {
           fetchNextPageCallback();
         }
       },
-      { threshold: 0.25 },
+      { threshold: 0.25 }
     );
 
     const currentRef = loadMoreRef.current;
@@ -108,7 +108,7 @@ export const ProjectsPage = () => {
   const { filteredCategories } = useFilteredCategories(categories, initialProjects);
 
   return (
-    <div className="relative flex flex-col gap-4 sm:gap-6 mt-10 sm:mt-4 pt-[5%]">
+    <div className="relative flex flex-col gap-4 sm:gap-6 mt-16 sm:mt-12 pt-[5%]">
       <SectionHeader
         subtitle="Explore Projects"
         description="Discover projects across various categories in the Monad ecosystem. From DeFi protocols to gaming platforms, find what interests you most."
