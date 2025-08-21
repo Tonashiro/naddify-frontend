@@ -43,7 +43,6 @@ export const ProjectsPage = () => {
 
   // Client-side filtering using context data
   const filteredProjects = useMemo(() => {
-    console.log('allProjects', allProjects);
     return allProjects.filter((project) => {
       const hasDevnadsCategory = project.categories.some((cat) => cat.name === 'Devnads');
 
