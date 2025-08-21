@@ -12,6 +12,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Disclaimer } from '@/components/Disclaimer';
 import { ParticlesBackground } from '@/components/ParticlesBackground';
 import { cookies } from 'next/headers';
+import { PROJECTS_AMOUNT_LIMIT } from '@/constants';
 
 const dmSans = DM_Sans({
   variable: '--font-dm-sans',
@@ -106,6 +107,49 @@ export default async function RootLayout({
       user = await userResponse.json();
     }
   }
+
+  // Fetch categories and projects in parallel
+  const [categoriesResponse, projectsResponse] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/categories`),
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`,
+    ),
+  ]);
+
+  if (!categoriesResponse.ok) {
+    throw new Error('Failed to fetch categories');
+  }
+  if (!projectsResponse.ok) {
+    throw new Error('Failed to fetch projects');
+  }
+
+  const [categories, projectsData] = await Promise.all([
+    categoriesResponse.json(),
+    projectsResponse.json(),
+  ]);
+
+  // Fetch user votes only if a token is available
+  const userVotes = token
+    ? await (async () => {
+        const userVotesResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/votes/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        if (!userVotesResponse.ok) {
+          console.error('Failed to fetch user votes');
+          return null;
+        }
+
+        return userVotesResponse.json();
+      })()
+    : null;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <SpeedInsights />
@@ -117,7 +161,12 @@ export default async function RootLayout({
           </body>
         }
       >
-        <Providers initialUser={user}>
+        <Providers
+          initialUser={user}
+          categories={categories}
+          initialProjects={projectsData}
+          userVotes={userVotes}
+        >
           <body
             className={`relative
           ${dmSans.variable} antialiased

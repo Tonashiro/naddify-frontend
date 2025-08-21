@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Plus } from 'lucide-react'; // Assuming you're using Lucide icons
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 interface IAddProjectCard {

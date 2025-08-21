@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { AddProjectCard } from '@/components/AddProjectCard';
 import { useUserContext } from '@/contexts/userContext';
 import Link from 'next/link';
+import { AddProjectCard } from '@/components/AddProjectCard';
 
 /**
  * The `Hero` component is a React functional component that renders a hero section
@@ -28,7 +28,7 @@ export const Hero: React.FC = () => {
   const { user } = useUserContext();
 
   return (
-    <section className="text-center max-w-3xl mx-auto relative mt-[64px] mb-[5%] pt-[5%]">
+    <section className="text-center max-w-3xl mx-auto relative mt-[64px] mb-[5%] pt-[5%]" id="hero">
       <div className="relative">
         <h2 className="text-3xl sm:text-5xl line-height-normal font-bold bg-gradient-to-r from-purple-300 via-purple-500 to-indigo-400 bg-clip-text text-transparent mb-5 leading-[1.15]">
           Vote. Verify. Discover.

@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { IStats } from '@/app/api/stats/route';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { IStats } from '@/app/api/stats/route';
 
 interface IStatsSectionProps {
   stats: IStats;
@@ -12,7 +12,7 @@ interface IStatsSectionProps {
 
 export const StatsSection: React.FC<IStatsSectionProps> = ({ stats }) => {
   return (
-    <section className="flex flex-col items-center justify-center w-full max-w-3xl mx-auto gap-4 mb-[5%] text-white">
+    <section className="flex flex-col items-center justify-center w-full max-w-3xl mx-auto sm:gap-6 gap-4 pb-8 text-white">
       {/* Highlighted Stat */}
       <Card
         className={cn(
