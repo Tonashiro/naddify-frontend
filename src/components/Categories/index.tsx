@@ -7,8 +7,8 @@ import Link from 'next/link';
 import { useFilteredCategories } from '@/hooks/useFilteredCategories';
 
 export const Categories = () => {
-  const { categories, initialProjects } = useProjectsContext();
-  const { filteredCategories } = useFilteredCategories(categories, initialProjects);
+  const { categories, allProjects } = useProjectsContext();
+  const { filteredCategories } = useFilteredCategories(categories, { projects: allProjects });
 
   return (
     <div className="relative container mx-auto mt-16 pt-[5%] pb-8">

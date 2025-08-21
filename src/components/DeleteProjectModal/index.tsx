@@ -13,6 +13,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { Dispatch, SetStateAction } from 'react';
 import { Spinner } from '@/components/Spinner';
+import { useProjectsContext } from '@/contexts/projectsContext';
 
 interface IDeleteProjectModal {
   isDialogOpen: boolean;
@@ -26,6 +27,7 @@ export const DeleteProjectModal = ({
   project,
 }: IDeleteProjectModal) => {
   const queryClient = useQueryClient();
+  const { refetchAllProjects } = useProjectsContext();
 
   const { mutate: deleteProject, isPending } = useMutation({
     mutationFn: async () => {
@@ -41,7 +43,7 @@ export const DeleteProjectModal = ({
 
       return project.id;
     },
-    onSuccess: (deletedId) => {
+    onSuccess: async (deletedId) => {
       const queries = queryClient.getQueryCache().findAll({ queryKey: ['projects'] });
 
       queries.forEach(({ queryKey }) => {
@@ -53,7 +55,7 @@ export const DeleteProjectModal = ({
                   pages: { projects: IProject[]; pagination: IPagination }[];
                   pageParams: Array<number>;
                 }
-              | undefined,
+              | undefined
           ) => {
             if (!oldData) return;
 
@@ -64,12 +66,13 @@ export const DeleteProjectModal = ({
                 projects: page.projects.filter((proj) => proj.id !== deletedId),
               })),
             };
-          },
+          }
         );
       });
 
       // Optionally invalidate queries to refetch data
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+      await refetchAllProjects();
 
       toast.success('Project deleted successfully!');
       setIsDialogOpen(false);

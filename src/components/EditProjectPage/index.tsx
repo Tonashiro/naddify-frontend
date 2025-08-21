@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { useProjectsContext } from '@/contexts/projectsContext';
 
 interface IEditProjectPageProps {
   project: TProjectForm & { id: string }; // Project data for editing
@@ -19,6 +20,7 @@ interface IEditProjectPageProps {
 export const EditProjectPage: React.FC<IEditProjectPageProps> = ({ project, categoryOptions }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { refetchAllProjects } = useProjectsContext();
 
   const form = useForm<TProjectForm>({
     resolver: zodResolver(projectSchema),
@@ -57,7 +59,7 @@ export const EditProjectPage: React.FC<IEditProjectPageProps> = ({ project, cate
       values: TProjectForm & {
         logoUrl: string | File;
         bannerUrl: string | File | null;
-      },
+      }
     ) => {
       const { logoUrl, bannerUrl, ...restValues } = values;
 
@@ -82,8 +84,9 @@ export const EditProjectPage: React.FC<IEditProjectPageProps> = ({ project, cate
 
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+      await refetchAllProjects();
       toast.success('Project updated successfully!');
       router.push(`/`);
     },
@@ -160,35 +163,35 @@ export const EditProjectPage: React.FC<IEditProjectPageProps> = ({ project, cate
                       return categoryId;
                     })
                   : Array.isArray(project.categories)
-                    ? project.categories.map((cat) =>
-                        typeof cat === 'string'
-                          ? {
-                              id: cat,
-                              name:
-                                categoryOptions.find((opt) => opt.id === cat)?.name ||
-                                'Category Name',
-                            }
-                          : cat,
-                      )
-                    : [],
+                  ? project.categories.map((cat) =>
+                      typeof cat === 'string'
+                        ? {
+                            id: cat,
+                            name:
+                              categoryOptions.find((opt) => opt.id === cat)?.name ||
+                              'Category Name',
+                          }
+                        : cat
+                    )
+                  : [],
               logo_url:
                 typeof formValues.logo_url === 'string'
                   ? formValues.logo_url
                   : formValues.logo_url instanceof File
-                    ? URL.createObjectURL(formValues.logo_url)
-                    : typeof project.logo_url === 'string'
-                      ? project.logo_url
-                      : '/images/monad.webp',
+                  ? URL.createObjectURL(formValues.logo_url)
+                  : typeof project.logo_url === 'string'
+                  ? project.logo_url
+                  : '/images/monad.webp',
               banner_url:
                 typeof formValues.banner_url === 'string'
                   ? formValues.banner_url
                   : formValues.banner_url instanceof File
-                    ? URL.createObjectURL(formValues.banner_url)
-                    : typeof project.banner_url === 'string'
-                      ? project.banner_url
-                      : project.banner_url === null
-                        ? null
-                        : undefined,
+                  ? URL.createObjectURL(formValues.banner_url)
+                  : typeof project.banner_url === 'string'
+                  ? project.banner_url
+                  : project.banner_url === null
+                  ? null
+                  : undefined,
               votes_for: 0,
               votes_against: 0,
               nads_verified: false,
