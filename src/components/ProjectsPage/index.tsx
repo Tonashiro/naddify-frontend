@@ -6,21 +6,21 @@ import { CategoriesCarousel } from '@/components/CategoriesCarousel';
 import { Projects } from '@/components/Projects';
 import { ProjectSearch } from '@/components/ProjectSearch';
 import { Spinner } from '@/components/Spinner';
-import { PROJECTS_AMOUNT_LIMIT } from '@/constants';
 import { useProjectsContext } from '@/contexts/projectsContext';
 import { useFilteredCategories } from '@/hooks/useFilteredCategories';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SectionHeader } from '@/components/SectionHeader';
+import { ONE_WEEK_MS, PROJECTS_AMOUNT_LIMIT } from '@/constants';
 
 export const ProjectsPage = () => {
-  const { categories, initialProjects, userVotes } = useProjectsContext();
+  const { categories, allProjects, userVotes } = useProjectsContext();
   const searchParams = useSearchParams();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showOnlyNew, setShowOnlyNew] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize selected categories from URL parameter
@@ -36,53 +36,70 @@ export const ProjectsPage = () => {
     }
   }, [searchParams, categories]);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['projects', selectedCategories, showOnlyNew, searchQuery],
-    initialPageParam: 1,
-    queryFn: async ({ pageParam = 1 }) => {
-      const categoryParam = selectedCategories.join(',');
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategories, searchQuery, showOnlyNew]);
 
-      const url = new URL(`/api/projects`, window.location.origin);
-      url.searchParams.set('page', pageParam.toString());
-      url.searchParams.set('limit', PROJECTS_AMOUNT_LIMIT.toString());
-      if (categoryParam) url.searchParams.set('category', categoryParam);
-      if (showOnlyNew) url.searchParams.set('onlyNew', 'true');
-      if (searchQuery) url.searchParams.set('q', searchQuery);
+  // Client-side filtering using context data
+  const filteredProjects = useMemo(() => {
+    return allProjects.filter((project) => {
+      const hasDevnadsCategory = project.categories.some((cat) => cat.name === 'Devnads');
 
-      const res = await fetch(url.toString(), { credentials: 'include' });
-
-      if (!res.ok) {
-        throw new Error('Failed to fetch projects');
+      // Hide Devnads projects unless Devnads category is specifically selected
+      if (
+        hasDevnadsCategory &&
+        !selectedCategories.includes('89fef89f-086a-4ee4-a300-219cdfb74340')
+      ) {
+        return false;
       }
 
-      return res.json();
-    },
-    getNextPageParam: (lastPage) => {
-      return lastPage.pagination.page < lastPage.pagination.pages
-        ? lastPage.pagination.page + 1
-        : undefined;
-    },
-    initialData: {
-      pages: [initialProjects],
-      pageParams: [1],
-    },
-    refetchOnWindowFocus: 'always',
-    refetchInterval: 60 * 1000,
-    retry: 1,
-  });
+      // Category filter
+      if (selectedCategories.length > 0) {
+        const hasSelectedCategory = project.categories.some((cat) =>
+          selectedCategories.includes(cat.id)
+        );
+        if (!hasSelectedCategory) return false;
+      }
 
-  const fetchNextPageCallback = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      // Search filter
+      if (searchQuery) {
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch =
+          project.name.toLowerCase().includes(searchLower) ||
+          project.description.toLowerCase().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+
+      // "Show only new" filter
+      if (showOnlyNew) {
+        const projectDate = new Date(project.created_at || '');
+        const cutoffDate = new Date(Date.now() - ONE_WEEK_MS);
+        if (projectDate < cutoffDate) return false;
+      }
+
+      return true;
+    });
+  }, [allProjects, selectedCategories, searchQuery, showOnlyNew]);
+
+  // Pagination
+  const paginatedProjects = filteredProjects.slice(0, currentPage * PROJECTS_AMOUNT_LIMIT);
+  const hasMore = paginatedProjects.length < filteredProjects.length;
+
+  // Load more functionality
+  const loadMore = useCallback(() => {
+    if (hasMore) {
+      setCurrentPage((prev) => prev + 1);
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [hasMore]);
 
+  // Infinite scroll observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting) {
-          fetchNextPageCallback();
+        if (entry.isIntersecting && hasMore) {
+          loadMore();
         }
       },
       { threshold: 0.25 }
@@ -94,18 +111,16 @@ export const ProjectsPage = () => {
     return () => {
       if (currentRef) observer.unobserve(currentRef);
     };
-  }, [fetchNextPageCallback]);
+  }, [loadMore, hasMore]);
 
-  // Map user votes to projects
-  const projectsToDisplay =
-    data?.pages
-      .flatMap((page) => page.projects)
-      .map((project) => ({
-        ...project,
-        voteType: userVotes?.votes?.find((vote) => vote.projectId === project.id)?.voteType,
-      })) ?? [];
+  const projectsToDisplay = paginatedProjects.map((project) => ({
+    ...project,
+    voteType: userVotes?.votes?.find((vote) => vote.projectId === project.id)?.voteType,
+  }));
 
-  const { filteredCategories } = useFilteredCategories(categories, initialProjects);
+  const { filteredCategories } = useFilteredCategories(categories, {
+    projects: allProjects,
+  });
 
   return (
     <div className="relative flex flex-col gap-4 sm:gap-6 mt-16 sm:mt-12 pt-[5%]">
@@ -151,13 +166,15 @@ export const ProjectsPage = () => {
           <ProjectSearch className="w-full sm:w-1/3" onSearch={setSearchQuery} />
         </div>
 
-        <Projects projects={projectsToDisplay} isLoading={isLoading} />
-        {!searchQuery && !isLoading && (
+        <Projects projects={projectsToDisplay} isLoading={false} />
+
+        {/* Infinite scroll trigger */}
+        {hasMore && (
           <div
             ref={loadMoreRef}
             className="min-h-20 w-fit mx-auto flex justify-center items-center"
           >
-            {isFetchingNextPage && <Spinner />}
+            <Spinner />
           </div>
         )}
       </div>

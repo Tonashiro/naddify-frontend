@@ -53,19 +53,23 @@ interface InitialProjects {
  * @param initialProjects - Object containing projects with their associated categories.
  * @returns Object containing filtered categories and used category IDs.
  */
+
 export const useFilteredCategories = (categories: Category[], initialProjects: InitialProjects) => {
   const initialUsedCategoryIds = useMemo(() => {
     const ids = new Set<string>();
+
     initialProjects.projects.forEach((project) => {
       project.categories?.forEach((category) => {
         ids.add(category.id);
       });
     });
+
     return ids;
   }, [initialProjects]);
 
   const filteredCategories = useMemo(() => {
-    return categories.filter((cat) => initialUsedCategoryIds.has(cat.id));
+    const filtered = categories.filter((cat) => initialUsedCategoryIds.has(cat.id));
+    return filtered;
   }, [initialUsedCategoryIds, categories]);
 
   return {

@@ -12,7 +12,6 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Disclaimer } from '@/components/Disclaimer';
 import { ParticlesBackground } from '@/components/ParticlesBackground';
 import { cookies } from 'next/headers';
-import { PROJECTS_AMOUNT_LIMIT } from '@/constants';
 
 const dmSans = DM_Sans({
   variable: '--font-dm-sans',
@@ -108,12 +107,9 @@ export default async function RootLayout({
     }
   }
 
-  // Fetch categories and projects in parallel
   const [categoriesResponse, projectsResponse] = await Promise.all([
     fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects/categories`),
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?page=1&limit=${PROJECTS_AMOUNT_LIMIT}`,
-    ),
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/projects?limit=1000`),
   ]);
 
   if (!categoriesResponse.ok) {
@@ -138,7 +134,7 @@ export default async function RootLayout({
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
-          },
+          }
         );
 
         if (!userVotesResponse.ok) {
