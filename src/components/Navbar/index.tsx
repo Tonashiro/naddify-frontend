@@ -101,7 +101,7 @@ export const Navbar: React.FC = () => {
         <ul className="hidden md:flex items-center gap-8 space-x-6">
           {user?.is_admin && <NavItem href="/projects/add" label="Add Project" />}
           <NavItem href="/projects" label="Projects" />
-          <NavItem href="/#team" label="Team" />
+          <NavItem href="/team" label="Team" />
         </ul>
 
         <div className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export const Navbar: React.FC = () => {
                     onClick={closeMobileMenu}
                     variant="mobile"
                   />
-                  <NavItem href="/#team" label="Team" onClick={closeMobileMenu} variant="mobile" />
+                  <NavItem href="/team" label="Team" onClick={closeMobileMenu} variant="mobile" />
                 </ul>
               </nav>
             </PopoverContent>

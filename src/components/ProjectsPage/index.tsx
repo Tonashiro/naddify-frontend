@@ -23,9 +23,10 @@ export const ProjectsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  // Initialize selected categories from URL parameter
   useEffect(() => {
     const categoryParam = searchParams.get('category');
+    const searchParam = searchParams.get('search');
+
     if (categoryParam && categoryParam !== 'all') {
       const category = categories.find(
         (cat) => cat.name.toLowerCase() === categoryParam.toLowerCase()
@@ -33,6 +34,10 @@ export const ProjectsPage = () => {
       if (category) {
         setSelectedCategories([category.id]);
       }
+    }
+
+    if (searchParam) {
+      setSearchQuery(searchParam);
     }
   }, [searchParams, categories]);
 
@@ -125,8 +130,9 @@ export const ProjectsPage = () => {
   return (
     <div className="relative flex flex-col gap-4 sm:gap-6 mt-16 sm:mt-12 pt-[5%]">
       <SectionHeader
+        title="PROJECTS"
         subtitle="Explore Projects"
-        description="Discover projects across various categories in the Monad ecosystem. From DeFi protocols to gaming platforms, find what interests you most."
+        description="From DeFi protocols to gaming platforms, find what interests you most."
       />
 
       <div className="flex items-center gap-1 justify-center sm:hidden mt-2">
@@ -162,8 +168,13 @@ export const ProjectsPage = () => {
             setSelectedCategories={setSelectedCategories}
             categories={filteredCategories}
             className="w-full sm:w-2/3"
+            onCategorySelect={() => setSearchQuery('')}
           />
-          <ProjectSearch className="w-full sm:w-1/3" onSearch={setSearchQuery} />
+          <ProjectSearch
+            className="w-full sm:w-1/3"
+            onSearch={setSearchQuery}
+            initialValue={searchQuery}
+          />
         </div>
 
         <Projects projects={projectsToDisplay} isLoading={false} />

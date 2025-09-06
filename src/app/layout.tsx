@@ -11,6 +11,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Disclaimer } from '@/components/Disclaimer';
 import { ParticlesBackground } from '@/components/ParticlesBackground';
+import { ScrollToTop } from '@/components/ScrollToTop';
 import { cookies } from 'next/headers';
 
 const dmSans = DM_Sans({
@@ -173,6 +174,7 @@ export default async function RootLayout({
             <ParticlesBackground />
             <Navbar />
             <Container>{children}</Container>
+            <ScrollToTop />
             <ToastContainer
               position="top-right"
               autoClose={5000}

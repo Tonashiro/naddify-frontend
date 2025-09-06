@@ -4,8 +4,8 @@ import { IStats } from '@/app/api/stats/route';
 import { Hero } from '@/components/Hero';
 import { StatsSection } from '@/components/StatsSection';
 import { useQuery } from '@tanstack/react-query';
-import { Categories } from '@/components/Categories';
-import { TeamSection } from '@/components/TeamSection';
+import { ProjectsBubble } from '../ProjectsBubble';
+import { ProjectsPage } from '../ProjectsPage';
 
 interface IHomePage {
   stats: IStats;
@@ -38,9 +38,9 @@ export const HomePage: React.FC<IHomePage> = ({ stats }) => {
 
       <StatsSection stats={statsData} />
 
-      <Categories />
+      <ProjectsBubble />
 
-      <TeamSection />
+      <ProjectsPage />
     </div>
   );
 };
