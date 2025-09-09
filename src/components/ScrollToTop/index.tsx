@@ -60,7 +60,7 @@ export const ScrollToTop = () => {
     <button
       onClick={scrollToCategories}
       className={cn(
-        'fixed bottom-8 right-8 z-50',
+        'fixed bottom-8 right-8 z-50 cursor-pointer',
         'w-12 h-12 rounded-full',
         'border border-purple-400/60',
         'shadow-lg shadow-purple-500/30',

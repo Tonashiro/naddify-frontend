@@ -1,23 +1,105 @@
+/**
+ * @title ProjectsBubble Component
+ * @notice Main component for displaying project categories in a responsive grid layout
+ *
+ * @dev This component manages the overall layout of project categories, handling both desktop
+ * and mobile views. It uses a configuration-based approach for flexible layouts:
+ *
+ * Key features:
+ * - Responsive design with different layouts for desktop/mobile
+ * - Configuration-driven layout using CATEGORY_LAYOUTS and CATEGORY_GROUPS
+ * - Nested section support for complex layouts (e.g., DeFi/DEX column)
+ * - Efficient category lookup using Map
+ *
+ * Layout Structure:
+ * - Desktop: Uses CATEGORY_GROUPS for complex nested layouts
+ * - Mobile: Uses MOBILE_CATEGORY_ORDER for simplified column layout
+ *
+ * @notice The component relies on BubbleSection for rendering individual category sections
+ *
+ * @param onProjectClick - Callback function triggered when a project is clicked
+ */
+
 'use client';
 
 import { useProjectsContext } from '@/contexts/projectsContext';
-import { useProjectsByCategory } from '@/hooks/useProjectsByCategory';
-import { VerifiedIcon } from '@/components/Icons/VerifiedIcon';
 import { SectionHeader } from '../SectionHeader';
-import Link from 'next/link';
+import { BubbleSection } from '../BubbleSection';
 
-export const ProjectsBubble = () => {
-  const { allProjects } = useProjectsContext();
-  const { getProjectsByCategory, getCategoriesByProjectCount } = useProjectsByCategory(allProjects);
-  // Get categories sorted by project count (most popular first)
-  const sortedCategories = getCategoriesByProjectCount();
+interface ProjectsBubbleProps {
+  onProjectClick: (projectName: string) => void;
+}
 
-  const allCategoriesWithProjects = sortedCategories.map((categoryName) => {
-    return {
-      name: categoryName,
-      projects: getProjectsByCategory(categoryName),
-    };
-  });
+export interface BubbleLayout {
+  width: string;
+  gridCols: string;
+  height?: string;
+}
+
+interface BubbleGroup {
+  categories: string[];
+  containerClass: string;
+  wrapperClass?: string;
+  sections?: BubbleSection[];
+}
+
+interface BubbleSection {
+  categories: string[];
+  containerClass: string;
+}
+
+const CATEGORY_LAYOUTS: Record<string, BubbleLayout> = {
+  NFT: { width: 'w-full', gridCols: 'grid-cols-5' },
+  DeFi: { width: 'w-full', gridCols: 'grid-cols-3', height: 'h-full' },
+  DEX: { width: 'w-full', gridCols: 'grid-cols-3', height: 'h-full' },
+  Perps: { width: 'w-2/6', gridCols: 'grid-cols-2' },
+  Gaming: { width: 'w-3/6', gridCols: 'grid-cols-3' },
+  Devnads: { width: 'w-1/6', gridCols: 'grid-cols-1' },
+  Betting: { width: 'w-1/2', gridCols: 'grid-cols-3' },
+  'Prediction Market': { width: 'w-1/2', gridCols: 'grid-cols-3' },
+};
+
+// Configuration for how categories are grouped in the layout
+const CATEGORY_GROUPS: BubbleGroup[] = [
+  {
+    categories: ['NFT'],
+    containerClass: 'flex justify-center gap-6',
+    wrapperClass: 'w-2/3',
+    sections: [
+      {
+        categories: ['DeFi', 'DEX'],
+        containerClass: 'flex flex-col gap-6',
+      },
+    ],
+  },
+  {
+    categories: ['Perps', 'Gaming', 'Devnads'],
+    containerClass: 'flex gap-6',
+  },
+  {
+    categories: ['Betting', 'Prediction Market'],
+    containerClass: 'flex gap-6',
+  },
+];
+
+const MOBILE_CATEGORY_ORDER = [
+  'NFT',
+  'DeFi',
+  'DEX',
+  'Perps',
+  'Gaming',
+  'Prediction Market',
+  'Betting',
+  'Devnads',
+];
+
+export const ProjectsBubble = ({ onProjectClick }: ProjectsBubbleProps) => {
+  const { allCategoriesWithProjects } = useProjectsContext();
+
+  // Create a map for quick category lookup
+  const categoryMap = new Map(
+    allCategoriesWithProjects.map((category) => [category.categoryName, category])
+  );
 
   return (
     <div className="pt-14 sm:pt-20" id="categories-section">
@@ -28,642 +110,67 @@ export const ProjectsBubble = () => {
       />
 
       {/* Desktop */}
-      <div className="hidden sm:block space-y-6 mt-10">
-        <div className="flex justify-center gap-6">
-          <div className="nfts w-2/3 bg-gray-100/5 rounded-lg p-6">
-            <h2 className="text-base font-bold text-white mb-4 text-center">NFTs</h2>
-            {allCategoriesWithProjects
-              .filter((category) => category.name === 'NFT')
-              .map((category) => (
-                <div key={category.name} className="grid grid-cols-7 gap-6 place-items-center">
-                  {category.projects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/projects?search=${encodeURIComponent(project.name)}`}
-                      className="relative group cursor-pointer"
-                    >
-                      <div className="relative w-14 h-14 mx-auto">
-                        <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                          <img
-                            src={project.logo_url}
-                            alt={project.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        </div>
+      <div className="hidden lg:block space-y-6 mt-10">
+        {CATEGORY_GROUPS.map((group, groupIndex) => (
+          <div key={groupIndex} className={group.containerClass}>
+            {/* Render main category */}
+            {group.categories.map((categoryName) => {
+              const category = categoryMap.get(categoryName);
+              if (!category || !CATEGORY_LAYOUTS[categoryName]) return null;
 
-                        {project.nads_verified && (
-                          <div className="absolute -top-0.5 right-0.5 z-10">
-                            <VerifiedIcon size={16} className="text-white" />
-                          </div>
-                        )}
-                      </div>
+              return (
+                <BubbleSection
+                  key={category.categoryId}
+                  categoryName={categoryName}
+                  projects={category.projects}
+                  layout={{
+                    ...CATEGORY_LAYOUTS[categoryName],
+                    width: group.wrapperClass || CATEGORY_LAYOUTS[categoryName].width,
+                  }}
+                  onProjectClick={onProjectClick}
+                />
+              );
+            })}
 
-                      <div className="text-center mt-2">
-                        <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                          {project.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ))}
+            {/* Render nested sections */}
+            {group.sections?.map((section, sectionIndex) => (
+              <div key={sectionIndex} className={section.containerClass}>
+                {section.categories.map((categoryName) => {
+                  const category = categoryMap.get(categoryName);
+                  if (!category || !CATEGORY_LAYOUTS[categoryName]) return null;
+
+                  return (
+                    <BubbleSection
+                      key={category.categoryId}
+                      categoryName={categoryName}
+                      projects={category.projects}
+                      layout={CATEGORY_LAYOUTS[categoryName]}
+                      onProjectClick={onProjectClick}
+                    />
+                  );
+                })}
+              </div>
+            ))}
           </div>
-          <div className="flex flex-col gap-6">
-            <div className="defi w-full bg-gray-100/5 rounded-lg p-6">
-              <h2 className="text-base font-bold text-white mb-4 text-center">DeFi</h2>
-              {allCategoriesWithProjects
-                .filter((category) => category.name === 'DeFi')
-                .map((category) => (
-                  <div key={category.name} className="grid place-items-center grid-cols-4 gap-6">
-                    {category.projects.map((project) => (
-                      <Link
-                        key={project.id}
-                        href={`/projects?search=${encodeURIComponent(project.name)}`}
-                        className="relative group cursor-pointer"
-                      >
-                        <div className="relative w-14 h-14 mx-auto">
-                          <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                            <img
-                              src={project.logo_url}
-                              alt={project.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          </div>
-
-                          {project.nads_verified && (
-                            <div className="absolute -top-0.5 right-0.5 z-10">
-                              <VerifiedIcon size={16} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center mt-2">
-                          <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                            {project.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-            </div>
-            <div className="dex bg-gray-100/5 rounded-lg p-6 w-full h-full">
-              <h2 className="text-base font-bold text-white mb-4 text-center">DEX</h2>
-              {allCategoriesWithProjects
-                .filter((category) => category.name === 'DEX')
-                .map((category) => (
-                  <div key={category.name} className="grid grid-cols-4 gap-6 place-items-center">
-                    {category.projects.map((project) => (
-                      <Link
-                        key={project.id}
-                        href={`/projects?search=${encodeURIComponent(project.name)}`}
-                        className="relative group cursor-pointer"
-                      >
-                        <div className="relative w-14 h-14 mx-auto">
-                          <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                            <img
-                              src={project.logo_url}
-                              alt={project.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          </div>
-
-                          {project.nads_verified && (
-                            <div className="absolute -top-0.5 right-0.5 z-10">
-                              <VerifiedIcon size={16} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center mt-2">
-                          <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                            {project.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-6">
-          <div className="perps bg-gray-100/5 rounded-lg p-6 w-2/6">
-            <h2 className="text-base font-bold text-white mb-4 text-center">Perps</h2>
-            {allCategoriesWithProjects
-              .filter((category) => category.name === 'Perps')
-              .map((category) => (
-                <div key={category.name} className="grid place-items-center grid-cols-2 gap-6">
-                  {category.projects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/projects?search=${encodeURIComponent(project.name)}`}
-                      className="relative group cursor-pointer"
-                    >
-                      <div className="relative w-14 h-14 mx-auto">
-                        <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                          <img
-                            src={project.logo_url}
-                            alt={project.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        </div>
-
-                        {project.nads_verified && (
-                          <div className="absolute -top-0.5 right-0.5 z-10">
-                            <VerifiedIcon size={16} className="text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-center mt-2">
-                        <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                          {project.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ))}
-          </div>
-
-          <div className="gaming bg-gray-100/5 rounded-lg p-6 w-3/6">
-            <h2 className="text-base font-bold text-white mb-4 text-center">Gaming</h2>
-            {allCategoriesWithProjects
-              .filter((category) => category.name === 'Gaming')
-              .map((category) => (
-                <div key={category.name} className="grid grid-cols-3 place-items-center gap-6">
-                  {category.projects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/projects?search=${encodeURIComponent(project.name)}`}
-                      className="relative group cursor-pointer"
-                    >
-                      <div className="relative w-14 h-14 mx-auto">
-                        <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                          <img
-                            src={project.logo_url}
-                            alt={project.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        </div>
-
-                        {project.nads_verified && (
-                          <div className="absolute -top-0.5 right-0.5 z-10">
-                            <VerifiedIcon size={16} className="text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-center mt-2">
-                        <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                          {project.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ))}
-          </div>
-
-          <div className="devnads bg-gray-100/5 rounded-lg p-6 w-1/6">
-            <h2 className="text-base font-bold text-white mb-4 text-center">Devnads</h2>
-            {allCategoriesWithProjects
-              .filter((category) => category.name === 'Devnads')
-              .map((category) => (
-                <div key={category.name} className="grid place-items-center gap-6">
-                  {category.projects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/projects?search=${encodeURIComponent(project.name)}`}
-                      className="relative group cursor-pointer"
-                    >
-                      <div className="relative w-14 h-14 mx-auto">
-                        <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                          <img
-                            src={project.logo_url}
-                            alt={project.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        </div>
-
-                        {project.nads_verified && (
-                          <div className="absolute -top-0.5 right-0.5 z-10">
-                            <VerifiedIcon size={16} className="text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-center mt-2">
-                        <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                          {project.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ))}
-          </div>
-        </div>
-
-        <div className="flex gap-6">
-          <div className="betting bg-gray-100/5 rounded-lg p-6 w-1/2">
-            <h2 className="text-base font-bold text-white mb-4 text-center">Betting</h2>
-            {allCategoriesWithProjects
-              .filter((category) => category.name === 'Betting')
-              .map((category) => (
-                <div key={category.name} className="grid grid-cols-3 place-items-center">
-                  {category.projects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/projects?search=${encodeURIComponent(project.name)}`}
-                      className="relative group cursor-pointer"
-                    >
-                      <div className="relative w-14 h-14 mx-auto">
-                        <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                          <img
-                            src={project.logo_url}
-                            alt={project.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        </div>
-
-                        {project.nads_verified && (
-                          <div className="absolute -top-0.5 right-0.5 z-10">
-                            <VerifiedIcon size={16} className="text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-center mt-2">
-                        <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                          {project.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ))}
-          </div>
-
-          <div className="prediction-market bg-gray-100/5 rounded-lg p-6 w-1/2">
-            <h2 className="text-base font-bold text-white mb-4 text-center">Predictions</h2>
-            {allCategoriesWithProjects
-              .filter((category) => category.name === 'Prediction Market')
-              .map((category) => (
-                <div key={category.name} className="grid grid-cols-3 place-items-center">
-                  {category.projects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/projects?search=${encodeURIComponent(project.name)}`}
-                      className="relative group cursor-pointer"
-                    >
-                      <div className="relative w-14 h-14 mx-auto">
-                        <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                          <img
-                            src={project.logo_url}
-                            alt={project.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        </div>
-
-                        {project.nads_verified && (
-                          <div className="absolute -top-0.5 right-0.5 z-10">
-                            <VerifiedIcon size={16} className="text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-center mt-2">
-                        <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                          {project.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ))}
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Mobile */}
-      <div className="sm:hidden space-y-6 mt-10">
-        <div className="flex flex-col justify-center items-center gap-6">
-          <div className="nfts w-full bg-gray-100/5 rounded-lg p-6">
-            <h2 className="text-base font-bold text-white mb-4 text-center">NFTs</h2>
-            {allCategoriesWithProjects
-              .filter((category) => category.name === 'NFT')
-              .map((category) => (
-                <div key={category.name} className="grid grid-cols-3 gap-6 place-items-center">
-                  {category.projects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/projects?search=${encodeURIComponent(project.name)}`}
-                      className="relative group cursor-pointer"
-                    >
-                      <div className="relative w-14 h-14 mx-auto">
-                        <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                          <img
-                            src={project.logo_url}
-                            alt={project.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        </div>
+      <div className="lg:hidden space-y-6 mt-10">
+        {MOBILE_CATEGORY_ORDER.map((categoryName) => {
+          const category = categoryMap.get(categoryName);
+          if (!category) return null;
 
-                        {project.nads_verified && (
-                          <div className="absolute -top-0.5 right-0.5 z-10">
-                            <VerifiedIcon size={16} className="text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-center mt-2">
-                        <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                          {project.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ))}
-          </div>
-          <div className="defi w-full bg-gray-100/5 rounded-lg p-6">
-            <h2 className="text-base font-bold text-white mb-4 text-center">DeFi</h2>
-            {allCategoriesWithProjects
-              .filter((category) => category.name === 'DeFi')
-              .map((category) => (
-                <div key={category.name} className="grid place-items-center grid-cols-3 gap-6">
-                  {category.projects.map((project) => (
-                    <Link
-                      key={project.id}
-                      href={`/projects?search=${encodeURIComponent(project.name)}`}
-                      className="relative group cursor-pointer"
-                    >
-                      <div className="relative w-14 h-14 mx-auto">
-                        <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                          <img
-                            src={project.logo_url}
-                            alt={project.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        </div>
-
-                        {project.nads_verified && (
-                          <div className="absolute -top-0.5 right-0.5 z-10">
-                            <VerifiedIcon size={16} className="text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-center mt-2">
-                        <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                          {project.name}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
-          <div className="w-full sm:w-2/5 flex flex-col sm:flex-row items-center gap-6">
-            <div className="dex bg-gray-100/5 rounded-lg p-6 w-full">
-              <h2 className="text-base font-bold text-white mb-4 text-center">DEX</h2>
-              {allCategoriesWithProjects
-                .filter((category) => category.name === 'DEX')
-                .map((category) => (
-                  <div key={category.name} className="grid grid-cols-3 gap-6 place-items-center">
-                    {category.projects.map((project) => (
-                      <Link
-                        key={project.id}
-                        href={`/projects?search=${encodeURIComponent(project.name)}`}
-                        className="relative group cursor-pointer"
-                      >
-                        <div className="relative w-14 h-14 mx-auto">
-                          <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                            <img
-                              src={project.logo_url}
-                              alt={project.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          </div>
-
-                          {project.nads_verified && (
-                            <div className="absolute -top-0.5 right-0.5 z-10">
-                              <VerifiedIcon size={16} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center mt-2">
-                          <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                            {project.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-            </div>
-            <div className="perps bg-gray-100/5 rounded-lg p-6 w-full">
-              <h2 className="text-base font-bold text-white mb-4 text-center">Perps</h2>
-              {allCategoriesWithProjects
-                .filter((category) => category.name === 'Perps')
-                .map((category) => (
-                  <div key={category.name} className="grid place-items-center grid-cols-3 gap-6">
-                    {category.projects.map((project) => (
-                      <Link
-                        key={project.id}
-                        href={`/projects?search=${encodeURIComponent(project.name)}`}
-                        className="relative group cursor-pointer"
-                      >
-                        <div className="relative w-14 h-14 mx-auto">
-                          <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                            <img
-                              src={project.logo_url}
-                              alt={project.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          </div>
-
-                          {project.nads_verified && (
-                            <div className="absolute -top-0.5 right-0.5 z-10">
-                              <VerifiedIcon size={16} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center mt-2">
-                          <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                            {project.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-            </div>
-          </div>
-          <div className="w-full flex flex-col items-center gap-6">
-            <div className="gaming bg-gray-100/5 rounded-lg p-6">
-              <h2 className="text-base font-bold text-white mb-4 text-center">Gaming</h2>
-              {allCategoriesWithProjects
-                .filter((category) => category.name === 'Gaming')
-                .map((category) => (
-                  <div key={category.name} className="grid place-items-center grid-cols-3 gap-6">
-                    {category.projects.map((project) => (
-                      <Link
-                        key={project.id}
-                        href={`/projects?search=${encodeURIComponent(project.name)}`}
-                        className="relative group cursor-pointer"
-                      >
-                        <div className="relative w-14 h-14 mx-auto">
-                          <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                            <img
-                              src={project.logo_url}
-                              alt={project.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          </div>
-
-                          {project.nads_verified && (
-                            <div className="absolute -top-0.5 right-0.5 z-10">
-                              <VerifiedIcon size={16} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center mt-2">
-                          <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                            {project.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-            </div>
-            <div className="prediction-market bg-gray-100/5 rounded-lg p-6">
-              <h2 className="text-base font-bold text-white mb-4 text-center">Predictions</h2>
-              {allCategoriesWithProjects
-                .filter((category) => category.name === 'Prediction Market')
-                .map((category) => (
-                  <div key={category.name} className="grid place-items-center grid-cols-3 w-full">
-                    {category.projects.map((project) => (
-                      <Link
-                        key={project.id}
-                        href={`/projects?search=${encodeURIComponent(project.name)}`}
-                        className="relative group cursor-pointer"
-                      >
-                        <div className="relative w-14 h-14 mx-auto">
-                          <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                            <img
-                              src={project.logo_url}
-                              alt={project.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          </div>
-
-                          {project.nads_verified && (
-                            <div className="absolute -top-0.5 right-0.5 z-10">
-                              <VerifiedIcon size={16} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center mt-2">
-                          <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                            {project.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-            </div>
-            <div className="betting bg-gray-100/5 rounded-lg p-6 w-full">
-              <h2 className="text-base font-bold text-white mb-4 text-center">Betting</h2>
-              {allCategoriesWithProjects
-                .filter((category) => category.name === 'Betting')
-                .map((category) => (
-                  <div key={category.name} className="grid place-items-center grid-cols-3 w-full">
-                    {category.projects.map((project) => (
-                      <Link
-                        key={project.id}
-                        href={`/projects?search=${encodeURIComponent(project.name)}`}
-                        className="relative group cursor-pointer"
-                      >
-                        <div className="relative w-14 h-14 mx-auto">
-                          <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                            <img
-                              src={project.logo_url}
-                              alt={project.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          </div>
-
-                          {project.nads_verified && (
-                            <div className="absolute -top-0.5 right-0.5 z-10">
-                              <VerifiedIcon size={16} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center mt-2">
-                          <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                            {project.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-            </div>
-
-            <div className="devnads bg-gray-100/5 rounded-lg p-6 w-full">
-              <h2 className="text-base font-bold text-white mb-4 text-center">Devnads</h2>
-              {allCategoriesWithProjects
-                .filter((category) => category.name === 'Devnads')
-                .map((category) => (
-                  <div key={category.name} className="grid place-items-center grid-cols-3">
-                    {category.projects.map((project) => (
-                      <Link
-                        key={project.id}
-                        href={`/projects?search=${encodeURIComponent(project.name)}`}
-                        className="relative group cursor-pointer"
-                      >
-                        <div className="relative w-14 h-14 mx-auto">
-                          <div className="w-full h-full rounded-full bg-gray-700 border border-gray-600 hover:border-purple-400 transition-all duration-300 flex items-center justify-center group-hover:scale-110">
-                            <img
-                              src={project.logo_url}
-                              alt={project.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          </div>
-
-                          {project.nads_verified && (
-                            <div className="absolute -top-0.5 right-0.5 z-10">
-                              <VerifiedIcon size={16} className="text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center mt-2">
-                          <p className="text-[11px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
-                            {project.name}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-            </div>
-          </div>
-        </div>
+          return (
+            <BubbleSection
+              key={category.categoryId}
+              categoryName={categoryName}
+              projects={category.projects}
+              layout={{ width: 'w-full', gridCols: 'grid-cols-3' }}
+              onProjectClick={onProjectClick}
+            />
+          );
+        })}
       </div>
     </div>
   );
