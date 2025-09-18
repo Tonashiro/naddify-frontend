@@ -14,6 +14,7 @@ interface ICategoriesCarouselProps {
   setSelectedCategories: Dispatch<SetStateAction<string[]>>;
   categories: ICategoryOption[];
   className?: string;
+  onCategorySelect?: () => void;
 }
 
 /**
@@ -63,6 +64,7 @@ export const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({
   setSelectedCategories,
   categories,
   className,
+  onCategorySelect,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -84,6 +86,11 @@ export const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({
       setSelectedCategories([]);
     } else {
       setSelectedCategories((prev) => (prev.includes(categoryId) ? [] : [categoryId]));
+    }
+
+    // Clear search when category is selected
+    if (onCategorySelect) {
+      onCategorySelect();
     }
   };
 

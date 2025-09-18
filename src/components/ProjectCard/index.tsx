@@ -107,7 +107,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
                   pages: { projects: IProject[]; pagination: IPagination }[];
                   pageParams: Array<number>;
                 }
-              | undefined,
+              | undefined
           ) => {
             if (!oldData) return;
 
@@ -124,11 +124,11 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
                         votes_breakdown: votesBreakdown,
                         voteType: pendingVote,
                       }
-                    : p,
+                    : p
                 ),
               })),
             };
-          },
+          }
         );
       });
 
@@ -172,7 +172,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
         className={cn(
           'relative min-h-[280px] transition-shadow duration-300',
           isNew(project.created_at) &&
-            'border-3 border-purple-500 shadow-[0_0_10px_2px_rgba(128,90,213,0.5)]',
+            'border-3 border-purple-500 shadow-[0_0_10px_2px_rgba(128,90,213,0.5)]'
         )}
       >
         <div className="absolute top-0 left-0 inset-0 w-full h-[150px] rounded-t-xl bg-purple-600/50">
@@ -315,7 +315,7 @@ export const ProjectCard: React.FC<IProjectCard> = ({ project, isPreview }) => {
             <div className="relative">
               {project.votes_breakdown &&
                 project.votes_breakdown.some(
-                  (vote) => vote.votes_against > 0 || vote.votes_for > 0,
+                  (vote) => vote.votes_against > 0 || vote.votes_for > 0
                 ) && (
                   <>
                     <button

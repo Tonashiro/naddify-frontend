@@ -18,6 +18,12 @@ export interface IUserVotes {
   votes: Array<TProjectVote>;
 }
 
+interface CategoryWithProjects {
+  categoryId: string;
+  categoryName: string;
+  projects: IProject[];
+}
+
 interface IProjectsContext {
   categories: ICategory[];
   initialProjects: { projects: IProject[] };
@@ -26,6 +32,7 @@ interface IProjectsContext {
   isLoadingAllProjects: boolean;
   errorAllProjects: string | null;
   refetchAllProjects: () => Promise<void>;
+  allCategoriesWithProjects: CategoryWithProjects[];
 }
 
 const ProjectsContext = createContext<IProjectsContext | undefined>(undefined);
@@ -65,6 +72,41 @@ export const ProjectsContextProvider = ({
     }
   };
 
+  const allCategoriesWithProjects = useMemo(() => {
+    // Create a map to store projects by their first category
+    const projectsByCategory = new Map<
+      string,
+      { id: string; name: string; projects: IProject[] }
+    >();
+
+    categories.forEach((category) => {
+      projectsByCategory.set(category.id, {
+        id: category.id,
+        name: category.name,
+        projects: [],
+      });
+    });
+
+    allProjects.forEach((project) => {
+      if (project.categories.length > 0) {
+        const firstCategory = project.categories[0];
+        const categoryData = projectsByCategory.get(firstCategory.id);
+        if (categoryData) {
+          categoryData.projects.push(project);
+        }
+      }
+    });
+
+    // Convert map to array and sort by project count
+    return Array.from(projectsByCategory.values())
+      .map((category) => ({
+        categoryId: category.id,
+        categoryName: category.name,
+        projects: category.projects,
+      }))
+      .sort((a, b) => b.projects.length - a.projects.length);
+  }, [categories, allProjects]);
+
   const contextValue = useMemo(
     () => ({
       categories,
@@ -74,6 +116,7 @@ export const ProjectsContextProvider = ({
       isLoadingAllProjects,
       errorAllProjects,
       refetchAllProjects,
+      allCategoriesWithProjects,
     }),
     [
       categories,
@@ -83,6 +126,7 @@ export const ProjectsContextProvider = ({
       isLoadingAllProjects,
       errorAllProjects,
       refetchAllProjects,
+      allCategoriesWithProjects,
     ]
   );
 

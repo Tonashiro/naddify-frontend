@@ -1,18 +1,20 @@
 'use client';
 
 import { IStats } from '@/app/api/stats/route';
+import { useState } from 'react';
 import { Hero } from '@/components/Hero';
 import { StatsSection } from '@/components/StatsSection';
 import { useQuery } from '@tanstack/react-query';
-import { Categories } from '@/components/Categories';
-import { TeamSection } from '@/components/TeamSection';
+import { ProjectsBubble } from '../ProjectsBubble';
+import { ProjectsPage } from '../ProjectsPage';
 
 interface IHomePage {
   stats: IStats;
 }
 
 export const HomePage: React.FC<IHomePage> = ({ stats }) => {
-  // Fetch stats using React Query
+  const [searchQuery, setSearchQuery] = useState('');
+
   const { data: statsData } = useQuery({
     queryKey: ['stats'],
     queryFn: async () => {
@@ -38,9 +40,14 @@ export const HomePage: React.FC<IHomePage> = ({ stats }) => {
 
       <StatsSection stats={statsData} />
 
-      <Categories />
+      <ProjectsBubble
+        onProjectClick={(projectName) => {
+          setSearchQuery(projectName);
+          document.getElementById('projects-section')?.scrollIntoView({ behavior: 'smooth' });
+        }}
+      />
 
-      <TeamSection />
+      <ProjectsPage initialSearchQuery={searchQuery} />
     </div>
   );
 };

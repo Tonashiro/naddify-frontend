@@ -13,19 +13,23 @@ import { useSearchParams } from 'next/navigation';
 import { SectionHeader } from '@/components/SectionHeader';
 import { ONE_WEEK_MS, PROJECTS_AMOUNT_LIMIT } from '@/constants';
 
-export const ProjectsPage = () => {
+interface ProjectsPageProps {
+  initialSearchQuery?: string;
+}
+
+export const ProjectsPage = ({ initialSearchQuery = '' }: ProjectsPageProps) => {
   const { categories, allProjects, userVotes } = useProjectsContext();
   const searchParams = useSearchParams();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showOnlyNew, setShowOnlyNew] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [currentPage, setCurrentPage] = useState(1);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  // Initialize selected categories from URL parameter
   useEffect(() => {
     const categoryParam = searchParams.get('category');
+
     if (categoryParam && categoryParam !== 'all') {
       const category = categories.find(
         (cat) => cat.name.toLowerCase() === categoryParam.toLowerCase()
@@ -36,17 +40,18 @@ export const ProjectsPage = () => {
     }
   }, [searchParams, categories]);
 
-  // Reset page when filters change
+  useEffect(() => {
+    setSearchQuery(initialSearchQuery);
+  }, [initialSearchQuery]);
+
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategories, searchQuery, showOnlyNew]);
 
-  // Client-side filtering using context data
   const filteredProjects = useMemo(() => {
     return allProjects.filter((project) => {
       const hasDevnadsCategory = project.categories.some((cat) => cat.name === 'Devnads');
 
-      // Hide Devnads projects unless Devnads category is specifically selected
       if (
         hasDevnadsCategory &&
         !selectedCategories.includes('89fef89f-086a-4ee4-a300-219cdfb74340')
@@ -82,11 +87,9 @@ export const ProjectsPage = () => {
     });
   }, [allProjects, selectedCategories, searchQuery, showOnlyNew]);
 
-  // Pagination
   const paginatedProjects = filteredProjects.slice(0, currentPage * PROJECTS_AMOUNT_LIMIT);
   const hasMore = paginatedProjects.length < filteredProjects.length;
 
-  // Load more functionality
   const loadMore = useCallback(() => {
     if (hasMore) {
       setCurrentPage((prev) => prev + 1);
@@ -123,10 +126,14 @@ export const ProjectsPage = () => {
   });
 
   return (
-    <div className="relative flex flex-col gap-4 sm:gap-6 mt-16 sm:mt-12 pt-[5%]">
+    <div
+      id="projects-section"
+      className="relative flex flex-col gap-4 sm:gap-6 mt-16 sm:mt-12 pt-[5%]"
+    >
       <SectionHeader
+        title="PROJECTS"
         subtitle="Explore Projects"
-        description="Discover projects across various categories in the Monad ecosystem. From DeFi protocols to gaming platforms, find what interests you most."
+        description="From DeFi protocols to gaming platforms, find what interests you most."
       />
 
       <div className="flex items-center gap-1 justify-center sm:hidden mt-2">
@@ -162,13 +169,17 @@ export const ProjectsPage = () => {
             setSelectedCategories={setSelectedCategories}
             categories={filteredCategories}
             className="w-full sm:w-2/3"
+            onCategorySelect={() => setSearchQuery('')}
           />
-          <ProjectSearch className="w-full sm:w-1/3" onSearch={setSearchQuery} />
+          <ProjectSearch
+            className="w-full sm:w-1/3"
+            onSearch={setSearchQuery}
+            initialValue={searchQuery}
+          />
         </div>
 
         <Projects projects={projectsToDisplay} isLoading={false} />
 
-        {/* Infinite scroll trigger */}
         {hasMore && (
           <div
             ref={loadMoreRef}

@@ -7,6 +7,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 interface IProjectSearchProps {
   className?: string;
   onSearch: (query: string) => void;
+  initialValue?: string;
 }
 
 /**
@@ -28,6 +29,7 @@ interface IProjectSearchProps {
  * ### Props:
  * - `className` (`string?`): Optional CSS classes for container customization
  * - `onSearch` (`(query: string) => void`): Callback function triggered on search value change
+ * - `initialValue` (`string?`): Initial value for the search input
  *
  * ### Example:
  * ```tsx
@@ -37,6 +39,7 @@ interface IProjectSearchProps {
  *     // Handle search query
  *     console.log('Searching for:', query);
  *   }}
+ *   initialValue="Kuru"
  * />
  * ```
  *
@@ -50,13 +53,21 @@ interface IProjectSearchProps {
  * @param props - Component props
  * @returns A search input field with debounced search functionality
  */
-export const ProjectSearch: React.FC<IProjectSearchProps> = ({ className, onSearch }) => {
-  const [value, setValue] = useState('');
+export const ProjectSearch: React.FC<IProjectSearchProps> = ({
+  className,
+  onSearch,
+  initialValue = '',
+}) => {
+  const [value, setValue] = useState(initialValue);
   const debouncedValue = useDebounce(value, 300);
 
   useEffect(() => {
     onSearch(debouncedValue);
   }, [debouncedValue, onSearch]);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
 
   return (
     <div className={cn('relative', className)}>
