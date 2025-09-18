@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useId } from 'react';
 
 interface IVerifiedIconProps extends React.SVGProps<SVGSVGElement> {
   size?: number | string;
 }
 
 export const VerifiedIcon: React.FC<IVerifiedIconProps> = ({ size = 24, ...props }) => {
-  const gradientId = useMemo(() => `gradPinkPurple-${Math.random().toString(36).substr(2, 9)}`, []);
+  const gradientId = useId();
 
   return (
     <svg
